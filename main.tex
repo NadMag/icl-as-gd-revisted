@@ -1,0 +1,202 @@
+\pdfoutput=1
+
+\documentclass[11pt]{article}
+
+% \usepackage[review]{ACL2023}
+\usepackage{ACL2023}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+
+% \RequirePackage{algorithm}
+% \RequirePackage{algorithmic}
+
+\input{settings.tex}
+\input{math_commands.tex}
+
+% \newcommand{\cmark}{\ding{51}\xspace}%
+\newcommand{\cmarkg}{\textcolor{lightgray}{\ding{51}}\xspace}%
+% \newcommand{\xmark}{\ding{55}\xspace}%
+\newcommand{\xmarkg}{\textcolor{lightgray}{\ding{55}}\xspace}%
+
+\newcommand\our{\textsc{structured prompting}}
+\newcommand{\tblidx}[1]{{\scriptsize \texttt{[#1]}}}
+\newtheorem{theorem}{Property}
+
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{{\color{blue}\ding{51}}}%
+\newcommand{\xmark}{{\color{black}\ding{55}}}%
+
+
+\title{Why Can GPT Learn In-Context? \\ Language Models Secretly Perform Gradient Descent as Meta-Optimizers}
+
+
+\newcommand*\samethanks[1][\value{footnote}]{\footnotemark[#1]}
+
+\author{\\
+Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
+ ~~~~ Supervised by Guy Dar\\
+Tel-Aviv University}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+% [intro to ICL]
+Large pretrained language models have shown surprising In-Context Learning~(ICL) ability. 
+With a few demonstration input-label pairs, they can predict the label for an unseen input without additional parameter updates. 
+% [RQ]
+Despite the great success in performance, the working mechanism of ICL still remains an open problem. 
+In order to better understand how ICL works, this paper explains language models as meta-optimizers and understands ICL as a kind of implicit finetuning. 
+% [Theoretical findings]
+Theoretically, we figure out that the Transformer attention has a dual form of gradient descent based optimization. 
+On top of it, we understand ICL as follows: GPT first produces meta-gradients according to the demonstration examples, and then these meta-gradients are applied to the original GPT to build an ICL model. 
+% [empirical experiments]
+Experimentally, we comprehensively compare the behavior of ICL and explicit finetuning based on real tasks to provide empirical evidence that supports our understanding. 
+The results prove that ICL behaves similarly to explicit finetuning at the prediction level, the representation level, and the attention behavior level. 
+% [applications]
+Further, inspired by our understanding of meta-optimization, we design a momentum-based attention by analogy with the momentum-based gradient descent algorithm. 
+Its consistently better performance over vanilla attention supports our understanding again from another aspect, and more importantly, it shows the potential to utilize our understanding for future model designing. 
+
+\end{abstract}
+
+\section{Introduction}
+
+\section{Background and Preliminaries}
+\input{background.tex}
+
+
+\section{Experiments}
+% \subsection{Tasks and Datasets}
+
+% % [intro and statistics to 6 datasets]
+% We compare ICL and finetuning based on six datasets spanning three classification tasks. 
+% \textbf{SST-2}~\citep{sst}, \textbf{SST-5}~\citep{sst}, \textbf{MR}~\citep{mr} and \textbf{Subj}~\citep{subj} are four datasets for sentiment classification; 
+% \textbf{AGNews}~\citep{dbpedia:agnews} is a topic classification dataset; 
+% and \textbf{CB}~\citep{cb} is used for natural language inference. 
+% The statistics of the validation examples and label types are summarized in Table~\ref{tab:dataset}. 
+
+% \subsection{Experimental Settings}
+
+% In our experiments, we use two GPT-like pretrained language models with 1.3B and 2.7B model parameters, respectively, which are released by fairseq\footnote{\url{https://github.com/facebookresearch/fairseq}}. 
+% In the rest of this paper, we call them GPT 1.3B and GPT 2.7B for short. 
+% All experiments are conducted on NVIDIA V100 GPUs with 32 GB memory. 
+
+% For each task, we use the same template to format examples for Zero-Shot Learning~(ZSL), ICL, and finetuning. 
+% Details of the templates used for each task are provided in Appendix~\ref{appendix:template}. 
+% The answer prediction processes for ZSL and finetuning are the same with ICL as described in Section~\ref{sec:bg_icl}, except that they do not have demonstration examples. 
+
+% For ICL, we fix the number of demonstration examples to 32 and tune the random seed for each task to find a set of demonstration examples that achieves the best validation performance. 
+% For finetuning, we use the same demonstration examples for ICL as the training examples and use SGD as the optimizer. 
+% For a fair comparison, we fine-tune the model for only one epoch and the 
+% training examples are provided in the same order as demonstrated for ICL. 
+% We tune the learning rate for finetuning and select the one that achieves the best validation performance. 
+% Details of the search range and selected value for the random seeds and learning rates are shown in Appendix~\ref{appendix:hyper}. 
+\input{expirements.tex}
+
+\subsection{Results}
+
+\paragraph{Accuracy}
+% We first show the validation accuracy in the ZSL, ICL, and finetuning settings on six classification datasets in Table~\ref{tab:acc}. 
+% Compared with ZSL, ICL and finetuning both achieve considerable improvements, which means the optimizations they make are both helpful to these downstream tasks. 
+% In addition, we find that ICL is better at few-shot scenarios than finetuning. 
+
+% \paragraph{Rec2FTP}
+% We show the Rec2FTP scores for two GPT models on six datasets in Table~\ref{tab:similarity}. 
+% As shown in the table, on average, ICL can correctly predict 87.64\% of the examples that finetuning can correct from ZSL. 
+% These results indicate that at the prediction level, ICL can cover most of the correct behavior of finetuning. 
+
+% \paragraph{SimAOU}
+% We present the SimAOU scores averaged across examples and layers for two GPT models on six datasets in Table~\ref{tab:similarity}. 
+% For comparison, we also provide a baseline metric~(\textbf{\textit{Random SimAOU}}) that computes the similarity between ICL updates and randomly generated updates. 
+% From the table, we find that ICL updates are much more similar to finetuning updates than to random updates, which means at the representation level, ICL tends to change the attention results in the same direction as finetuning changes. 
+
+% \paragraph{SimAM}
+% Table~\ref{tab:similarity} also demonstrates the SimAM scores averaged across examples and layers for two GPT models on six datasets. 
+% As a baseline metric for SimAM, \textbf{\textit{ZSL SimAM}} computes the similarity between ICL attention weights and ZSL attention weights. 
+% Comparing these two metrics, we also observe that compared with ZSL, ICL is more inclined to generate attention weights similar to those of finetuning. 
+% Again, at the attention behavior level, we prove that ICL behaves similarly to finetuning. 
+
+\section{Discussions}
+
+\section{Related Work}
+In-context learning (ICL) is a machine learning approach where a model fine-tunes its knowledge and adapts its behavior based on specific contextual information or examples, allowing it to perform better on tasks related to that context.
+It enables models to leverage domain-specific or task-specific knowledge without extensive retraining, making them more versatile and adaptable.
+In their work, \cite{NEURIPS2020_1457c0d6} explores the remarkable ability of language models, particularly GPT-3, to learn and perform tasks with minimal examples, demonstrating their potential as versatile few-shot learners.
+The authors showcase the models' impressive performance across a wide range of tasks and emphasize their capacity to generalize from limited data, highlighting the transformative impact of these models on various natural language processing applications.
+
+In recent research, there has been a growing interest in understanding the relationship between two key concepts: in-context learning (ICL) and gradient descent (GD)-based fine-tuning, particularly in the context of transformer models (\cite{pmlr-v202-von-oswald23a,2022arXiv221210559D}).
+This research seeks to uncover how ICL, which involves adapting and learning in specific contexts, can be effectively integrated with the iterative optimization process of GD, especially when fine-tuning transformer models.
+However, the majority of the examination was on models that had relaxed constraints and featured linear attention mechanisms:
+\begin{equation}
+  LinearAttn(K,V,q)=KV^q
+\end{equation}
+
+The paper \cite{pmlr-v202-von-oswald23a}, develops an explicit weight values for a linear self-attention layer, achieving an update equivalent to a single iteration of gradient descent (GD) aimed at minimizing mean squared error. Moreover, the authors demonstrate how multiple self-attention layers can progressively execute curvature adjustments, leading to enhancements over standard gradient descent.
+They proposed the following:
+
+Given a 1-head linear attention layer and
+the tokens $e_{j} = (x_{j},y_{j})$, for $j = 1, . . . , N$, one can construct key, query and value matrices $W_{K}$, $W_{Q}$, $W_{V}$ as well
+as the projection matrix P such that a Transformer step on 
+every token $e_j$ is identical to the gradient-induced dynamics $e_j \rightarrow (x_j , y_j ) + (0, - \delta W x_j ) = (x_j , y_j ) + PVK^{T}q_j$
+such that $e_j = (x_j , y_j - \delta y_j )$. For the test data token
+$(x_{N+1}, y_{N+1})$ the dynamics are identical.
+
+By doing so, they demonstrate the capability of linear attention to execute gradient descent on the deep representations constructed by the transformer.
+
+
+Another paper (\cite{2022arXiv221210559D}) expand the findings from linear attention to conventional attention mechanisms, substantiating their claims with empirical data.
+Inspired by \cite{Aizerman2019TheoreticalFO} and \cite{unknown}, the idea in this is paper to explain language models as meta-optimizers.
+
+Consider $W_0$ and $\Delta W$, both belonging to $\mathbb{R}^{d_{out} \times d_{in}}$, where $W_0$ represents the initial parameter matrix, and $\Delta W$ signifies the updating matrix. Additionally, let $x$ be a member of $\mathbb{R}^{d_{in}}$, serving as the input representation. A linear layer, subject to optimization via gradient descent, can be articulated as follows:
+\begin{equation}
+  \mathcal{F}(x) = (W_0 + \Delta W)x \label{eq:2}
+\end{equation}
+In the context of the back-propagation algorithm, the determination of $\Delta W$ entails the aggregation of outer products derived from historical input representations $x'_i \in \mathbb{R}^{d_{in}}$ and their corresponding error signals $e_i \in \mathbb{R}^{d_{out}}$:
+\begin{equation}
+  \Delta W = \sum_{i} e_i \otimes x'_i \label{eq:3}
+\end{equation}
+Notably, $e_i$ is the result of scaling historical output gradients by $-\gamma$, the negative learning rate.
+
+By equations \eqref{eq:2} and \eqref{eq:3}, we can derive the dual manifestation of linear layers, optimized through gradient descent, as follows:
+\begin{align}
+  \begin{split}
+    \mathcal{F}(x) &= (W_0 + \Delta W)x \\
+    &= W_0x + \Delta Wx \\
+    &= W_0x + \sum_{i} (e_i \otimes x'_i)x \\
+    &= W_0x + \sum_{i} e_i(x^{'T}_ix) \\
+    &= W_0x + \text{LinearAttn}(E, X', x)
+  \end{split}
+  \label{eq:4}
+\end{align}
+Here, $E$ denotes historical output error signal values, $X'$ corresponds to historical inputs employed as keys, and $x$ serves as the current input, operating as the query.
+
+Their experiments convincingly reveal that a model fine-tuned through gradient steps and a model prompted with in-context examples appear to perform analogous functions, exhibiting similar behaviors on inputs. 
+Additionally, they observe significant similarities in the internal behaviors of these two models.
+
+% \section{Related Work}
+
+% xxx
+
+\section{Conclusion}
+
+
+\nocite{rw1}
+\nocite{rw2}
+
+\bibliography{anthology,refs}
+\bibliographystyle{acl_natbib}
+
+\newpage
+\appendix
+
+
+\end{document}

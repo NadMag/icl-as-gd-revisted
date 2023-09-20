@@ -39,8 +39,8 @@
 
 \author{\\
 Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
- ~~~~ Supervised by Guy Dar\\
-Tel-Aviv University}
+~~~~Supervised by Guy Dar\\
+~~~~~Tel-Aviv University}
 
 \date{}
 
@@ -76,6 +76,16 @@ Its consistently better performance over vanilla attention supports our understa
 
 
 \section{Experiments}
+\subsection{Per-Layer Training}
+We fine-tune the GPT model with two changes: (1) we feed the output of each attention layer to the projection head and subsequently compute the cross entropy loss on it 
+(2) we detach the output of each layer from the computational graph, meaning that each layer does not propagate the gradient back to previous layers. Figure~\ref{per-layer-training} illustrates the process.
+\begin{figure*}%
+\centering
+\subfloat{{\includegraphics[width=15cm]{per layer training.png}}}%
+\caption{Per-layer training. The output of each layer is fed to the projection head and the loss is computed on it. The losses are then summed to create the loss of a single training step.}
+\label{per-layer-training}%
+\end{figure*}
+
 % \subsection{Tasks and Datasets}
 
 % % [intro and statistics to 6 datasets]

@@ -50,21 +50,21 @@ Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
 
 \begin{abstract}
 
-% [intro to ICL]
-Large pretrained language models have shown surprising In-Context Learning~(ICL) ability. 
-With a few demonstration input-label pairs, they can predict the label for an unseen input without additional parameter updates. 
-% [RQ]
-Despite the great success in performance, the working mechanism of ICL still remains an open problem. 
-In order to better understand how ICL works, this paper explains language models as meta-optimizers and understands ICL as a kind of implicit finetuning. 
-% [Theoretical findings]
-Theoretically, we figure out that the Transformer attention has a dual form of gradient descent based optimization. 
-On top of it, we understand ICL as follows: GPT first produces meta-gradients according to the demonstration examples, and then these meta-gradients are applied to the original GPT to build an ICL model. 
-% [empirical experiments]
-Experimentally, we comprehensively compare the behavior of ICL and explicit finetuning based on real tasks to provide empirical evidence that supports our understanding. 
-The results prove that ICL behaves similarly to explicit finetuning at the prediction level, the representation level, and the attention behavior level. 
-% [applications]
-Further, inspired by our understanding of meta-optimization, we design a momentum-based attention by analogy with the momentum-based gradient descent algorithm. 
-Its consistently better performance over vanilla attention supports our understanding again from another aspect, and more importantly, it shows the potential to utilize our understanding for future model designing. 
+	% [intro to ICL]
+	Large pretrained language models have shown surprising In-Context Learning~(ICL) ability.
+	With a few demonstration input-label pairs, they can predict the label for an unseen input without additional parameter updates.
+	% [RQ]
+	Despite the great success in performance, the working mechanism of ICL still remains an open problem.
+	In order to better understand how ICL works, this paper explains language models as meta-optimizers and understands ICL as a kind of implicit finetuning.
+	% [Theoretical findings]
+	Theoretically, we figure out that the Transformer attention has a dual form of gradient descent based optimization.
+	On top of it, we understand ICL as follows: GPT first produces meta-gradients according to the demonstration examples, and then these meta-gradients are applied to the original GPT to build an ICL model.
+	% [empirical experiments]
+	Experimentally, we comprehensively compare the behavior of ICL and explicit finetuning based on real tasks to provide empirical evidence that supports our understanding.
+	The results prove that ICL behaves similarly to explicit finetuning at the prediction level, the representation level, and the attention behavior level.
+	% [applications]
+	Further, inspired by our understanding of meta-optimization, we design a momentum-based attention by analogy with the momentum-based gradient descent algorithm.
+	Its consistently better performance over vanilla attention supports our understanding again from another aspect, and more importantly, it shows the potential to utilize our understanding for future model designing.
 
 \end{abstract}
 
@@ -77,13 +77,23 @@ Its consistently better performance over vanilla attention supports our understa
 
 \section{Experiments}
 \subsection{Per-Layer Training}
-We fine-tune the GPT model with two changes: (1) we feed the output of each attention layer to the projection head and subsequently compute the cross entropy loss on it 
+We fine-tune the GPT model with two changes: (1) we feed the output of each attention layer to the projection head and subsequently compute the cross entropy loss on it
 (2) we detach the output of each layer from the computational graph, meaning that each layer does not propagate the gradient back to previous layers. Figure~\ref{per-layer-training} illustrates the process.
+
+There are 3 main motivations for this experiment:
+\begin{enumerate}
+	\item Direction of "information flow": in standard model training, due to the nature of backpropagation, the gradient flows from the output layer to the input layer.
+	      This is the opposite direction of information flow in the ICL process, where each layer is ignorant of the output of the subsequent layers.
+	      In the per-layer training, each layer's gradient does not depend on later layers.
+	\item The analysis of the similarity between ICL and fine-tuning, as shown in equations \ref{equ:icl_opti_dual} and \ref{equ:sgd_attn_dual} is done per-layer and is not expanded to the entire model.
+	\item In \cite{dai2023gpt}, the authors show that the similarity between ICL and finetuning is higher for the final layers of the model, suggesting that our intuition about the direction of information flow is correct.
+\end{enumerate}
+
 \begin{figure*}%
-\centering
-\subfloat{{\includegraphics[width=15cm]{per layer training.png}}}%
-\caption{Per-layer training. The output of each layer is fed to the projection head and the loss is computed on it. The losses are then summed to create the loss of a single training step.}
-\label{per-layer-training}%
+	\centering
+	\subfloat{{\includegraphics[width=15cm]{per layer training.png}}}%
+	\caption{Per-layer training. The output of each layer is fed to the projection head and the loss is computed on it. The losses are then summed to create the loss of a single training step.}
+	\label{per-layer-training}
 \end{figure*}
 
 % \subsection{Tasks and Datasets}
@@ -114,6 +124,36 @@ We fine-tune the GPT model with two changes: (1) we feed the output of each atte
 \input{expirements.tex}
 
 \subsection{Results}
+
+\begin{table*}[t]
+	\subfloat[original]{
+		\begin{tabular}{|l|r|r|r|r|r|r|r|}
+			\hline \textbf{Metric $\textbackslash$ Task} & SST2   & SST5   & MR    & Subj   & AGNews & CB     & Average       \\
+			\hline Sim AUO Random                        & 0.0017 & 0.0029 & 0.001 & 0.0025 & 0.0021 & 0.0037 & 0.00231666666 \\
+			\hline Sim AUO FT                            & 0.1091 & 0.113  & 0.219 & 0.193  & 0.3053 & 0.2013 & 0.1901166667  \\
+			\hline SimAM Before FT                       & 0.5547 & 0.3914 & 0.398 & 0.378  & 0.1516 & 0.1524 & 0.3376833333  \\
+			\hline SimAM After FT                        & 0.585  & 0.4047 & 0.498 & 0.487  & 0.4944 & 0.1875 & 0.4427666667  \\
+			\hline
+		\end{tabular}
+	}
+	\quad
+	\subfloat[per-layer]{
+		\begin{tabular}{|l|r|r|r|r|r|r|r|r|}
+			\hline \textbf{Metric $\textbackslash$ Task} & SST2   & SST5   & MR     & Subj   & AGNews & CB     & Average      \\
+			\hline Sim AUO Random                        & 0.0016 & 0.0025 & 0.0008 & 0.0022 & 0.0021 & 0.0037 & 0.00215      \\
+			\hline Sim AUO FT                            & 0.2297 & 0.1065 & 0.3299 & 0.3439 & 0.3213 & 0.3435 & 0.2791333333 \\
+			\hline SimAM Before FT                       & 0.5546 & 0.3913 & 0.3979 & 0.3786 & 0.1518 & 0.1524 & 0.3377666667 \\
+			\hline SimAM After FT                        & 0.5774 & 0.4039 & 0.2919 & 0.2844 & 0.1201 & 0.0293 & 0.2845       \\
+			\hline
+		\end{tabular}
+	}
+  \label{tab:per_layer_metrics}
+	\caption{Top shows the original metrics. Bottom shows the metrics for the per-layer training process. The Sim AUO metric is higher for the per-layer training.}
+\end{table*}
+
+\subsubsection{Per-Layer Training}
+We recreate the experiments of \cite{dai2023gpt} results using the per-layer training method.
+The results are shown in Table~\ref{tab:per_layer_metrics}. The SimAOU metric is higher for the per-layer training.
 
 \paragraph{Accuracy}
 % We first show the validation accuracy in the ZSL, ICL, and finetuning settings on six classification datasets in Table~\ref{tab:acc}. 
@@ -148,7 +188,7 @@ In recent research, there has been a growing interest in understanding the relat
 This research seeks to uncover how ICL, which involves adapting and learning in specific contexts, can be effectively integrated with the iterative optimization process of GD, especially when fine-tuning transformer models.
 However, the majority of the examination was on models that had relaxed constraints and featured linear attention mechanisms:
 \begin{equation}
-  LinearAttn(K,V,q)=KV^q
+	LinearAttn(K,V,q)=KV^q
 \end{equation}
 
 The paper \cite{pmlr-v202-von-oswald23a}, develops an explicit weight values for a linear self-attention layer, achieving an update equivalent to a single iteration of gradient descent (GD) aimed at minimizing mean squared error. Moreover, the authors demonstrate how multiple self-attention layers can progressively execute curvature adjustments, leading to enhancements over standard gradient descent.
@@ -156,7 +196,7 @@ They proposed the following:
 
 Given a 1-head linear attention layer and
 the tokens $e_{j} = (x_{j},y_{j})$, for $j = 1, . . . , N$, one can construct key, query and value matrices $W_{K}$, $W_{Q}$, $W_{V}$ as well
-as the projection matrix P such that a Transformer step on 
+as the projection matrix P such that a Transformer step on
 every token $e_j$ is identical to the gradient-induced dynamics $e_j \rightarrow (x_j , y_j ) + (0, - \delta W x_j ) = (x_j , y_j ) + PVK^{T}q_j$
 such that $e_j = (x_j , y_j - \delta y_j )$. For the test data token
 $(x_{N+1}, y_{N+1})$ the dynamics are identical.
@@ -169,28 +209,28 @@ Inspired by \cite{Aizerman2019TheoreticalFO} and \cite{unknown}, the idea in thi
 
 Consider $W_0$ and $\Delta W$, both belonging to $\mathbb{R}^{d_{out} \times d_{in}}$, where $W_0$ represents the initial parameter matrix, and $\Delta W$ signifies the updating matrix. Additionally, let $x$ be a member of $\mathbb{R}^{d_{in}}$, serving as the input representation. A linear layer, subject to optimization via gradient descent, can be articulated as follows:
 \begin{equation}
-  \mathcal{F}(x) = (W_0 + \Delta W)x \label{eq:2}
+	\mathcal{F}(x) = (W_0 + \Delta W)x \label{eq:2}
 \end{equation}
 In the context of the back-propagation algorithm, the determination of $\Delta W$ entails the aggregation of outer products derived from historical input representations $x'_i \in \mathbb{R}^{d_{in}}$ and their corresponding error signals $e_i \in \mathbb{R}^{d_{out}}$:
 \begin{equation}
-  \Delta W = \sum_{i} e_i \otimes x'_i \label{eq:3}
+	\Delta W = \sum_{i} e_i \otimes x'_i \label{eq:3}
 \end{equation}
 Notably, $e_i$ is the result of scaling historical output gradients by $-\gamma$, the negative learning rate.
 
 By equations \eqref{eq:2} and \eqref{eq:3}, we can derive the dual manifestation of linear layers, optimized through gradient descent, as follows:
 \begin{align}
-  \begin{split}
-    \mathcal{F}(x) &= (W_0 + \Delta W)x \\
-    &= W_0x + \Delta Wx \\
-    &= W_0x + \sum_{i} (e_i \otimes x'_i)x \\
-    &= W_0x + \sum_{i} e_i(x^{'T}_ix) \\
-    &= W_0x + \text{LinearAttn}(E, X', x)
-  \end{split}
-  \label{eq:4}
+	\begin{split}
+		\mathcal{F}(x) &= (W_0 + \Delta W)x \\
+		&= W_0x + \Delta Wx \\
+		&= W_0x + \sum_{i} (e_i \otimes x'_i)x \\
+		&= W_0x + \sum_{i} e_i(x^{'T}_ix) \\
+		&= W_0x + \text{LinearAttn}(E, X', x)
+	\end{split}
+	\label{eq:4}
 \end{align}
 Here, $E$ denotes historical output error signal values, $X'$ corresponds to historical inputs employed as keys, and $x$ serves as the current input, operating as the query.
 
-Their experiments convincingly reveal that a model fine-tuned through gradient steps and a model prompted with in-context examples appear to perform analogous functions, exhibiting similar behaviors on inputs. 
+Their experiments convincingly reveal that a model fine-tuned through gradient steps and a model prompted with in-context examples appear to perform analogous functions, exhibiting similar behaviors on inputs.
 Additionally, they observe significant similarities in the internal behaviors of these two models.
 
 % \section{Related Work}

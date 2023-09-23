@@ -1,18 +1,20 @@
-\begin{table}[htbp]
+We calculated SimAOU and SimAM for both original and linearized models. Results are shown in Table \ref{tabel:lin_results}.
+Due to limitation in compute resources, we could not evaluate the linearized model on the datasets AGNews and CB. For the original version of the model we were able to replicate the results in \cite{dai2023gpt}. 
+\begin{table*}[t]
     \centering
-    \caption{Table Caption}
-    \label{tab:mytable}
-    \begin{tabular}{|l|cccc|}
+    \caption{SimAOU and SimAM on four datasets, comparing similarity between random and finetune for both original model and liniarization of the model.}
+    \label{tabel:lin_results}
+    \begin{tabular}{|l|cccc|c|}
     \hline
-    \multicolumn{1}{|c|}{\multirow{2}{*}{Data/Model \& Metric}} & \multicolumn{4}{c|}{SST2} \\ \cline{2-5} 
-    \multicolumn{1}{|c|}{} & SST5 & MR & Subj & Average \\ \hline
-    Sim AUO Random & & & & \\
-    Lin Sim AOU Random & & & & \\
-    Sim AUO FT & & & & \\
-    Lin Sim AOU FT & & & & \\
-    SimAM Before FT & & & & \\
-    Lin SimAM Before FT & & & & \\
-    SimAM After FT & & & & \\
-    Lin SimAM After FT & & & & \\ \hline
+    Data \& Metric & SST2 & SST5 & MR & Subj & Average \\ \hline
+    SimAOU Random & 0.001 & 0.002 & 0.001 & 0.002 & 0.002\\ 
+    SimAOU FT & 0.1091 & 0.113& 0.219& 0.193 & 0.158 \\ 
+    SimAOU Lin Random & 0.001 & 0.002 & 0.0007 & 0.002	& 0.001 \\
+    SimAOU Lin FT & 0.122 & 0.0789 &	0.171	& 0.148	& 0.130 \\ \hline
+    SimAM Before FT & 0.5547 & 0.3914 & 0.398 & 0.378 & 0.430 \\
+    SimAM After FT & 0.585 & 0.404 & 0.498 & 0.487 & 0.493 \\
+    SimAM Lin Before FT & 0.554 & 0.391 &	0.397 & 0.378 & 0.4305 \\
+    SimAM Lin After FT & 0.573 & 0.403 & 0.448 & 0.449 & 0.468 \\ \hline
     \end{tabular}
-    \end{table}
+    \end{table*}
+    

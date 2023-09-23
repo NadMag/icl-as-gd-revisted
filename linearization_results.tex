@@ -1,22 +1,21 @@
 \begin{table*}[t]
-    \centering
-    \caption{SimAOU and SimAM on four datasets, comparing similarity between random and finetune for both original model and liniarization of the model.}
-    \label{tabel:lin_results}
-    \begin{tabular}{|l|cccc|c|}
-    \hline
-    Data \& Metric & SST2 & SST5 & MR & Subj & Average \\ \hline
-    SimAOU Random & 0.001 & 0.002 & 0.001 & 0.002 & 0.002\\ 
-    SimAOU FT & 0.1091 & 0.113& 0.219& 0.193 & \textbf{0.158} \\ 
-    SimAOU Lin Random & 0.001 & 0.002 & 0.0007 & 0.002	& 0.001 \\
-    SimAOU Lin FT & 0.122 & 0.0789 &	0.171	& 0.148	& 0.130 \\ \hline
-    SimAM Before FT & 0.5547 & 0.3914 & 0.398 & 0.378 & 0.430 \\
-    SimAM After FT & 0.585 & 0.404 & 0.498 & 0.487 & \textbf{0.493} \\
-    SimAM Lin Before FT & 0.554 & 0.391 &	0.397 & 0.378 & 0.4305 \\
-    SimAM Lin After FT & 0.573 & 0.403 & 0.448 & 0.449 & 0.468 \\ \hline
-    \end{tabular}
-    \end{table*}
+	\centering
+	\caption{SimAOU and SimAM on four datasets, comparing similarity between random and finetune for both original model and liniarization of the model.}
+	\label{tabel:lin_results}
+	\begin{tabular}{|l|cccc|c|}
+		\hline
+		Data \& Metric      & SST2   & SST5   & MR     & Subj  & Average        \\ \hline
+		SimAOU Random       & 0.001  & 0.002  & 0.001  & 0.002 & 0.002          \\
+		SimAOU FT           & 0.1091 & 0.113  & 0.219  & 0.193 & \textbf{0.158} \\
+		SimAOU Lin Random   & 0.001  & 0.002  & 0.0007 & 0.002 & 0.001          \\
+		SimAOU Lin FT       & 0.122  & 0.0789 & 0.171  & 0.148 & 0.130          \\ \hline
+		SimAM Before FT     & 0.5547 & 0.3914 & 0.398  & 0.378 & 0.430          \\
+		SimAM After FT      & 0.585  & 0.404  & 0.498  & 0.487 & \textbf{0.493} \\
+		SimAM Lin Before FT & 0.554  & 0.391  & 0.397  & 0.378 & 0.4305         \\
+		SimAM Lin After FT  & 0.573  & 0.403  & 0.448  & 0.449 & 0.468          \\ \hline
+	\end{tabular}
+\end{table*}
 
 We calculated SimAOU and SimAM for both original and linearized models. Results are shown in Table \ref{tabel:lin_results}.
-Due to limitation in compute resources, we ran all the experiment with pretrained GPT model with 1.3 billion model parameters (GPT 1.3B). In addition we were unable evaluate the linearized model on the datasets AGNews and CB due to heavy memory consumption. It is worth mentioning that we were able to replicate the results of GPT 1.3B from \cite{dai2023gpt} with a negligible difference. 
+Due to limitation in compute resources, we ran all the experiment with pretrained GPT model with 1.3 billion model parameters (GPT 1.3B). In addition we were unable evaluate the linearized model on the datasets AGNews and CB due to heavy memory consumption. It is worth mentioning that we were able to replicate the results of GPT 1.3B from \cite{dai2023gpt} with a negligible difference.
 The results indicate that the linearized model yields lower similarity scores compared to the original model but significantly higher scores than a random vector. This suggests that our hypothesis was incorrect and other simple model versions should be thought of. More on that in the discussion section.
-    

@@ -8,7 +8,7 @@ Let $W \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$ be the weight matri
 One step of gradient descent on the loss function $\mathcal{L}$ with learning rate $\eta$ yields the weight update $\Delta W$.
 This update can be written as the outer products of the training examples $\mathbf{x}_1, \dots, \mathbf{x}_n$ and the gradients of their corresponding outputs $\mathbf{e}_i = -\eta \nabla_{W_0 x_i}\mathcal{L}$
 \begin{equation}
-    \Delta W = \sum_i \mathbf{e}_i \otimes \mathbf{x}^{\prime T}_i.
+    \Delta W = \sum_i \mathbf{e}_i \otimes \mathbf{x}^{\prime T}_i
     \label{equ:dual_comp_2}
 \end{equation}
 

@@ -49,25 +49,16 @@ Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
 \maketitle
 
 \begin{abstract}
-
-	% [intro to ICL]
-	Large pretrained language models have shown surprising In-Context Learning~(ICL) ability.
-	With a few demonstration input-label pairs, they can predict the label for an unseen input without additional parameter updates.
-	% [RQ]
-	Despite the great success in performance, the working mechanism of ICL still remains an open problem.
-	In order to better understand how ICL works, this paper explains language models as meta-optimizers and understands ICL as a kind of implicit finetuning.
-	% [Theoretical findings]
-	Theoretically, we figure out that the Transformer attention has a dual form of gradient descent based optimization.
-	On top of it, we understand ICL as follows: GPT first produces meta-gradients according to the demonstration examples, and then these meta-gradients are applied to the original GPT to build an ICL model.
-	% [empirical experiments]
-	Experimentally, we comprehensively compare the behavior of ICL and explicit finetuning based on real tasks to provide empirical evidence that supports our understanding.
-	The results prove that ICL behaves similarly to explicit finetuning at the prediction level, the representation level, and the attention behavior level.
-	% [applications]
-	Further, inspired by our understanding of meta-optimization, we design a momentum-based attention by analogy with the momentum-based gradient descent algorithm.
-	Its consistently better performance over vanilla attention supports our understanding again from another aspect, and more importantly, it shows the potential to utilize our understanding for future model designing.
-
+	In-context learning (ICL) has shown impressive results in few-shot learning tasks, yet the underlying mechanism of it is still not fully understood.
+	Recent research suggests that ICL is similar to gradient descent (GD)-based fine-tuning. 
+	Mathematical analysis shows an equivalence between ICL to gradient descent on a transformer with linear attention and one layer,
+	yet empirical research has shown only limited success in showing equivalence on non-linear, multi-layered models.
+	In this work, we experiment with a new training process that we call per-layer training, 
+	and provide some empricial evidence to suggest that this process may explain the underlying mechanism of ICL better than standard fine-tuning.
+	Per-layer training, we beileve, aligns better with the mathematical analysis of the ICL and GD eqvuivalence.
+	We also experiment with fine-tuning the model with linear approximation of it.
 	% [git]
-	Code implementation for all our experiments can be find here:
+	Code implementation for all our experiments can be found here:
 	\href{https://github.com/GiilDe/ft-vs-icl}{https://github.com/GiilDe/ft-vs-icl}
 \end{abstract}
 
@@ -89,7 +80,6 @@ There are 3 main motivations for this experiment:
 	      This is the opposite direction of information flow in the ICL process, where each layer is ignorant of the output of the subsequent layers.
 	      In the per-layer training, each layer's gradient does not depend on later layers.
 	\item The analysis of the similarity between ICL and fine-tuning, as shown in equations \ref{equ:icl_opti_dual} and \ref{equ:sgd_attn_dual} is done per-layer and is not expanded to the entire model.
-	\item In \cite{dai2023gpt}, the authors show that the similarity between ICL and finetuning is higher for the final layers of the model, suggesting that our intuition about the direction of information flow may be correct.
 	\item In \cite{dai2023gpt}, the authors show that the similarity between ICL and finetuning is higher for the final layers of the model, suggesting that our intuition about the direction of information flow may be correct.
 \end{enumerate}
 

@@ -8,7 +8,7 @@ Let $W \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$ be the weight matri
 One step of gradient descent on the loss function $\mathcal{L}$ with learning rate $\eta$ yields the weight update $\Delta W$.
 This update can be written as the outer products of the training examples $\mathbf{x}_1, \dots, \mathbf{x}_n$ and the gradients of their corresponding outputs $\mathbf{e}_i = -\eta \nabla_{W_0 x_i}\mathcal{L}$
 \begin{equation}
-    \Delta W = \sum_i \mathbf{e}_i \otimes \mathbf{x}^{\prime T}_i.
+    \Delta W = \sum_i \mathbf{e}_i \otimes \mathbf{x}^{\prime T}_i
     \label{equ:dual_comp_2}
 \end{equation}
 
@@ -67,19 +67,15 @@ By analogy with Equation(\ref{equ:sgd_attn_dual}), we can regard $W_{K} \textbf{
 
 \subsection{Linearization of a Model}
 Resent works suggest a function we optimize can significantly simplify by a method called linearization \cite{10.5555/3454287.3455056, linearization23}.
-Specifically, these works suggest that it is possible to approximate the linearity of a pre-trained model in the vicinity of its initial parameters:
+Specifically, these works suggest that it is possible to approximate a pre-trained model in the vicinity of its initial parameters:
 \begin{equation}
     f_{\theta_0 + \delta \theta}(x) \approx f_{\theta_0}(x) + \delta \theta^\textrm{T} \nabla_{\theta_0} f(x) := f_{\delta \theta}^{\textrm{lin}}(x; \theta_0)
 \end{equation}
 where $\theta_0$ represents the pre-trained model's parameters, $\delta \theta$ indicates the change in parameters during fine-tuning, and $x$ denotes an input sequence (fixed with respect to $\delta \theta$).
-In this linear model across deep representations, denoted as $\phi_i(x) = \nabla_{\theta_0} f(x)$, there is no need to compute gradients throughout the entire network; we only require the coefficients. We then perform the following gradient step:
+This is a linear model across deep representations, denoted as $\phi_i(x) = \nabla_{\theta_0} f(x)$. We don’t require taking gradients through the entire network, just the coefficients. We then perform the following gradient step:
 
 \[
 \theta \xleftarrow{} \theta - \eta \nabla\mathcal{L}(f^{\textrm{lin}} (x), y) \cdot \phi(x)
 \]
 
-Given that we utilize the KL divergence loss, this expression can be simplified to $\theta - \eta \big[\log f^{\textrm{lin}} (x)\big]_y \cdot \phi(x)$, where $y$ represents the token index of the target label, and $\big[\cdot]_i$ denotes the i-th coordinate of the expression within the brackets.
-
-In our work, we emphasize the intuition that it is worth exploring variations that enable the implementation of functions with reduced complexity when studding the backlogs of ICL.
-This is due to the limitation on the complexity of functions expressible by the forward pass, which must be tied to the network's depth.
-Hence, a linearized variation of the model has been explored.
+In our work, we underscore the importance of exploring alternative approaches that enable the implementation of functions with reduced complexity when investigating ICL. This emphasis arises from the limitations imposed on the complexity of functions attainable through the forward pass, which must align with the network's depth. Therefore, we have explored a linearized variant of the model to address this constraint

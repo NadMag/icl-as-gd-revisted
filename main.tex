@@ -95,7 +95,7 @@ There are 3 main motivations for this experiment:
 
 \begin{figure*}%
 	\centering
-	\subfloat{{\includegraphics[width=15cm]{per layer training.png}}}%
+	\subfloat{{\includegraphics[width=10cm]{per layer training.png}}}%
 	\caption{Per-layer training. The output of each layer is fed to the projection head and the loss is computed on it. The losses are then summed to create the loss of a single training step.}
 	\label{per-layer-training}
 \end{figure*}
@@ -167,12 +167,21 @@ We hypothesize, at this point, that the reason for the lower SimAM metric is the
 The first layers of the model are now trained on a new objective, i.e their output is projected to the vocabulary space and the cross-entropy loss is computed on it instead of being passed for the next numerous layers.
 Because of that, the gradient norm may be larger than the gradient norm of the standard training process.
 We verify this hypothesis by measuring the norm of the gradients of each attention layer, during the standard training process and the per-layer training process.
-The results are shown in Figure.
+The results are shown in Figure \ref{grad_norm}.
 
 Following this finding, we attempt to apply gradient clipping to the per-layer training process with limited success.
 We experiment with different clipping values for one task (Subj) and are able to improve the metrics for this task, see Table~\ref{tab:per_layer_clipping_metrics}.
 Yet, we find that each task requires a different clipping value, and aim to find a more principled approach.
 We attempt to clip the gradients by normalizing them to allow a maximum norm that is the norm measured in the standard fine-tuning, but this does not improve the results.
+
+
+\begin{figure*}%
+	\centering
+	\subfloat{{\includegraphics[width=6cm]{per_layer_grad_norm (1).png}}}%
+	\subfloat{{\includegraphics[width=6cm]{full_ft_grad_norm.png}}}%
+	\caption{The gradient norm of each attention layer during the per-layer training process (left) and the standard fine-tuning process (right). The scale of the y-axis is different for each plot.}
+	\label{grad_norm}
+\end{figure*}
 
 
 \begin{table*}[t]

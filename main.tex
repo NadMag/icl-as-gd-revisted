@@ -69,6 +69,9 @@ Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
 	% [git]
 	Code implementation for all our experiments can be find here:
 	\href{https://github.com/GiilDe/ft-vs-icl/tree/master}{https://github.com/GiilDe/ft-vs-icl/tree/master}.
+	% [git]
+	Code implementation for all our experiments can be find here:
+	\href{https://github.com/GiilDe/ft-vs-icl/tree/master}{https://github.com/GiilDe/ft-vs-icl/tree/master}.
 \end{abstract}
 
 \section{Introduction}
@@ -89,6 +92,7 @@ There are 3 main motivations for this experiment:
 	      This is the opposite direction of information flow in the ICL process, where each layer is ignorant of the output of the subsequent layers.
 	      In the per-layer training, each layer's gradient does not depend on later layers.
 	\item The analysis of the similarity between ICL and fine-tuning, as shown in equations \ref{equ:icl_opti_dual} and \ref{equ:sgd_attn_dual} is done per-layer and is not expanded to the entire model.
+	\item In \cite{dai2023gpt}, the authors show that the similarity between ICL and finetuning is higher for the final layers of the model, suggesting that our intuition about the direction of information flow may be correct.
 	\item In \cite{dai2023gpt}, the authors show that the similarity between ICL and finetuning is higher for the final layers of the model, suggesting that our intuition about the direction of information flow may be correct.
 \end{enumerate}
 
@@ -153,6 +157,7 @@ There are 3 main motivations for this experiment:
 		\end{tabular}
 	}
 	\caption{Top shows the original metrics. Bottom shows the metrics for the per-layer training process. The Sim AUO metric is higher for the per-layer training.}
+	\label{tab:per_layer_metrics}
 	\label{tab:per_layer_metrics}
 \end{table*}
 
@@ -240,6 +245,9 @@ We attempt to clip the gradients by normalizing them to allow a maximum norm tha
 \subsection{Existence of an optimization process similar to ICL}
 The mathematical analysis in Section~\ref{sec:icl_dual} suggests a similarity between ICL and finetuning.
 Yet, it's important to note its limitations: (1) it is done on a linear attention layer (2) it is done on a single layer
+(3) It is unclear what is the loss function for the optimization process that it suggests.
+This means that the analysis is not sufficient to prove that non-linear, full model ICL is indeed a form of finetuning;
+Hence, whether such an optimization process (or any kind of process) exists is still an open question.
 (3) It is unclear what is the loss function for the optimization process that it suggests.
 This means that the analysis is not sufficient to prove that non-linear, full model ICL is indeed a form of finetuning;
 Hence, whether such an optimization process (or any kind of process) exists is still an open question.

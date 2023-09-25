@@ -25,3 +25,24 @@ For the sake of comparison, we also compute a baseline metric known as SimAOU (R
 We use SimAM to measure the similarity between attention maps and query tokens for ICL and finetuning.
 For a query example, let $m^{(l,h)}_X$ represent the attention weights before softmax in the $h$-th head of the $l$-th layer for setting $X$. In ICL, we focus solely on query token attention weights, excluding demonstration tokens. Initially, before finetuning, we compute the cosine similarity between $m^{(l,h)}_{ICL}$ and $m^{(l,h)}_{ZSL}$, averaging it across attention heads to obtain SimAM (Before Finetuning) for each layer.
 Similarly, after finetuning, we calculate the cosine similarity between $m^{(l,h)}_{ICL}$ and $m^{(l,h)}_{FT}$ to obtain SimAM (After FT). A higher SimAM (After FT) relative to SimAM (Before FT) indicates that ICL's attention behavior aligns more with a finetuned model than a non-finetuned one.
+
+
+\subsection{Prediction Alignment}
+In this section we focus on the perspective of model predictions, regarding both ICL and finetuning as black-box updates to the zero-shot setting prediction.
+While this analysis provides less insight into the inner workings of ICL, prediction alignment is easily interpretable and seems necessary for downstream applications of such comparisons.
+
+We revisit the results of \cite{dai2023gpt}, and note the discrepancy between the accuracy of the finetuned model and the ICL setting.
+Our evaluation shows an average relative difference of $19.38\%$ between ICL and finetuning accuracy with respect to the original model.
+To better understand .... we measure .... reference fig
+
+Specifically \cite{dai2023gpt} find that ICL achieves high \textbf{Rec2FTP} scores, which means it covers most of the correct predictions of finetuning.
+%relative diff in acc by task (1_3B)[0.2666666666666666, 0.13994910941475827, 0.24279210925644915, 0.16804407713498629, 0.30021598272138245, 0.045333333333333406]$%
+We argue that this metric is insufficient because (1) it does not account for the accuracy discrepancy, (2) it does not reflect incorrect prediction updates which may reflect meaningful behavioral changes in the model.
+
+
+To address these fallacies we propose a measurement of \textbf{relative prediction alignment} (RPA) to quantify the similarity between both prediction updates.
+Given a validation set, we denote the subset of example whose prediction is changed with regards to the zero-shot setting by ICL or FT by $D_\text{ICL}$ and $D_\text{FT}$ respectively.
+We define the RPA of these updates by: $\frac{\sizeof{D_\text{ICL} \cap D_\text{FT}}}{\sizeof{D_\text{ICL}} + \sizeof{D_\text{FT}} - \sizeof{D_\text{ICL} \cap D_\text{FT}}}$.     
+
+
+\input{}

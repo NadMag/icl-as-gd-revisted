@@ -32,7 +32,7 @@
 \newcommand{\xmark}{{\color{black}\ding{55}}}%
 
 
-\title{Why Can GPT Learn In-Context? \\ Language Models Secretly Perform Gradient Descent as Meta-Optimizers}
+\title{Understanding In-Context Learning in Large Language Models as Gradient Descent Revisted}
 
 
 \newcommand*\samethanks[1][\value{footnote}]{\footnotemark[#1]}
@@ -49,26 +49,17 @@ Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
 \maketitle
 
 \begin{abstract}
-
-	% [intro to ICL]
-	Large pretrained language models have shown surprising In-Context Learning~(ICL) ability.
-	With a few demonstration input-label pairs, they can predict the label for an unseen input without additional parameter updates.
-	% [RQ]
-	Despite the great success in performance, the working mechanism of ICL still remains an open problem.
-	In order to better understand how ICL works, this paper explains language models as meta-optimizers and understands ICL as a kind of implicit finetuning.
-	% [Theoretical findings]
-	Theoretically, we figure out that the Transformer attention has a dual form of gradient descent based optimization.
-	On top of it, we understand ICL as follows: GPT first produces meta-gradients according to the demonstration examples, and then these meta-gradients are applied to the original GPT to build an ICL model.
-	% [empirical experiments]
-	Experimentally, we comprehensively compare the behavior of ICL and explicit finetuning based on real tasks to provide empirical evidence that supports our understanding.
-	The results prove that ICL behaves similarly to explicit finetuning at the prediction level, the representation level, and the attention behavior level.
-	% [applications]
-	Further, inspired by our understanding of meta-optimization, we design a momentum-based attention by analogy with the momentum-based gradient descent algorithm.
-	Its consistently better performance over vanilla attention supports our understanding again from another aspect, and more importantly, it shows the potential to utilize our understanding for future model designing.
-
+	In-context learning (ICL) has shown impressive results in few-shot learning tasks, yet the underlying mechanism of it is still not fully understood.
+	Recent research suggests that ICL is similar to gradient descent (GD)-based fine-tuning.
+	Mathematical analysis shows an equivalence between ICL to gradient descent on a transformer with linear attention and one layer,
+	yet empirical research has shown only limited success in showing equivalence on non-linear, multi-layered models.
+	In this work, we experiment with a new training process that we call per-layer training,
+	and provide some empricial evidence to suggest that this process may explain the underlying mechanism of ICL better than standard fine-tuning.
+	Per-layer training, we beileve, aligns better with the mathematical analysis of the ICL and GD equivalence.
+	We also experiment with fine-tuning the model with linear approximation of it.
 	% [git]
-	Code implementation for all our experiments can be find here:
-	\href{https://github.com/GiilDe/ft-vs-icl/tree/master}{https://github.com/GiilDe/ft-vs-icl/tree/master}.
+	Code implementation for all our experiments can be found here:
+	\href{https://github.com/GiilDe/ft-vs-icl}{https://github.com/GiilDe/ft-vs-icl}
 \end{abstract}
 
 \section{Introduction}
@@ -80,21 +71,23 @@ Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
 
 \section{Experiments}
 \subsection{Per-Layer Training}
-We fine-tune the GPT model with two changes: (1) we feed the output of each attention layer to the projection head and subsequently compute the cross entropy loss on it
-(2) we detach the output of each layer from the computational graph, meaning that each layer does not propagate the gradient back to previous layers. Figure~\ref{per-layer-training} illustrates the process.
+There are 2 points in which the analysis in sections \ref{sec:icl_dual_1} and \ref{sec:icl_dual} differs from the standard fine-tuning process:
 
-There are 3 main motivations for this experiment:
 \begin{enumerate}
 	\item Direction of "information flow": in standard model training, due to the nature of backpropagation, the gradient flows from the output layer to the input layer.
 	      This is the opposite direction of information flow in the ICL process, where each layer is ignorant of the output of the subsequent layers.
 	      In the per-layer training, each layer's gradient does not depend on later layers.
+	      In \cite{dai2023gpt}, the authors show that the similarity between ICL and finetuning is higher for the final layers of the model, suggesting that our intuition about the direction of information flow may be correct.
 	\item The analysis of the similarity between ICL and fine-tuning, as shown in equations \ref{equ:icl_opti_dual} and \ref{equ:sgd_attn_dual} is done per-layer and is not expanded to the entire model.
-	\item In \cite{dai2023gpt}, the authors show that the similarity between ICL and finetuning is higher for the final layers of the model, suggesting that our intuition about the direction of information flow may be correct.
 \end{enumerate}
+These deviations, lead us to fine-tune the GPT model with two changes to standard training: (1) we feed the output of each attention layer to the projection head and subsequently compute the cross entropy loss on it
+(2) we detach the output of each layer from the computational graph, meaning that each layer does not propagate the gradient back to previous layers. Figure~\ref{per-layer-training} illustrates the process.
+
+
 
 \begin{figure*}%
 	\centering
-	\subfloat{{\includegraphics[width=15cm]{per layer training.png}}}%
+	\subfloat{{\includegraphics[width=8cm]{per layer training.png}}}%
 	\caption{Per-layer training. The output of each layer is fed to the projection head and the loss is computed on it. The losses are then summed to create the loss of a single training step.}
 	\label{per-layer-training}
 \end{figure*}
@@ -127,37 +120,56 @@ There are 3 main motivations for this experiment:
 \input{expirements.tex}
 
 \section{Results}
-\subsection{Linearization}
-\input{linearization_results.tex}
-
+Due to limitation in compute resources, we ran all of the experiments with pretrained GPT model with 1.3 billion model parameters (GPT 1.3B), Hence all of the results described in this section are on that model
 \begin{table*}[t]
-	\subfloat[original]{
+	% \subfloat[original]{
+	% 	\begin{tabular}{|l|r|r|r|r|r|r|r|}
+	% 		\hline \textbf{Metric $\textbackslash$ Task} & SST2   & SST5   & MR    & Subj   & AGNews & CB     & Average \\
+	% 		\hline Sim AUO Random                        & 0.0017 & 0.0029 & 0.001 & 0.0025 & 0.0021 & 0.0037 & 0.0023  \\
+	% 		\hline Sim AUO FT                            & 0.1091 & 0.113  & 0.219 & 0.193  & 0.3053 & 0.2013 & 0.1901  \\
+	% 		\hline SimAM Before FT                       & 0.5547 & 0.3914 & 0.398 & 0.378  & 0.1516 & 0.1524 & 0.3376  \\
+	% 		\hline SimAM After FT                        & 0.585  & 0.4047 & 0.498 & 0.487  & 0.4944 & 0.1875 & 0.4427  \\
+	% 		\hline
+	% 	\end{tabular}
+	% }
+	% \quad
+	% \subfloat[per-layer]{
+	% 	\begin{tabular}{|l|r|r|r|r|r|r|r|r|}
+	% 		\hline \textbf{Metric $\textbackslash$ Task} & SST2   & SST5   & MR     & Subj   & AGNews & CB     & Average \\
+	% 		\hline Sim AUO Random                        & 0.0016 & 0.0025 & 0.0008 & 0.0022 & 0.0021 & 0.0037 & 0.0021  \\
+	% 		\hline Sim AUO FT                            & 0.2297 & 0.1065 & 0.3299 & 0.3439 & 0.3213 & 0.3435 & 0.2791  \\
+	% 		\hline SimAM Before FT                       & 0.5546 & 0.3913 & 0.3979 & 0.3786 & 0.1518 & 0.1524 & 0.3377  \\
+	% 		\hline SimAM After FT                        & 0.5774 & 0.4039 & 0.2919 & 0.2844 & 0.1201 & 0.0293 & 0.2845  \\
+	% 		\hline
+	% 	\end{tabular}
+	% }
+
+	\centering
+	\subfloat{
 		\begin{tabular}{|l|r|r|r|r|r|r|r|}
-			\hline \textbf{Metric $\textbackslash$ Task} & SST2   & SST5   & MR    & Subj   & AGNews & CB     & Average       \\
-			\hline Sim AUO Random                        & 0.0017 & 0.0029 & 0.001 & 0.0025 & 0.0021 & 0.0037 & 0.00231666666 \\
-			\hline Sim AUO FT                            & 0.1091 & 0.113  & 0.219 & 0.193  & 0.3053 & 0.2013 & 0.1901166667  \\
-			\hline SimAM Before FT                       & 0.5547 & 0.3914 & 0.398 & 0.378  & 0.1516 & 0.1524 & 0.3376833333  \\
-			\hline SimAM After FT                        & 0.585  & 0.4047 & 0.498 & 0.487  & 0.4944 & 0.1875 & 0.4427666667  \\
+			\hline \textbf{Metric $\textbackslash$ Task} & SST2   & SST5   & MR     & Subj   & AGNews & CB     & Average         \\
+			\hline SimAOU Random                         & 0.0016 & 0.0025 & 0.0008 & 0.0022 & 0.0021 & 0.0037 & 0.0021          \\
+			\hline SimAOU FT                             & 0.1091 & 0.113  & 0.219  & 0.193  & 0.3053 & 0.2013 & 0.1901          \\
+			\hline SimAOU Per-Layer FT                   & 0.2297 & 0.1065 & 0.3299 & 0.3439 & 0.3213 & 0.3435 & \textbf{0.2791} \\
 			\hline
 		\end{tabular}
 	}
 	\quad
-	\subfloat[per-layer]{
-		\begin{tabular}{|l|r|r|r|r|r|r|r|r|}
-			\hline \textbf{Metric $\textbackslash$ Task} & SST2   & SST5   & MR     & Subj   & AGNews & CB     & Average      \\
-			\hline Sim AUO Random                        & 0.0016 & 0.0025 & 0.0008 & 0.0022 & 0.0021 & 0.0037 & 0.00215      \\
-			\hline Sim AUO FT                            & 0.2297 & 0.1065 & 0.3299 & 0.3439 & 0.3213 & 0.3435 & 0.2791333333 \\
-			\hline SimAM Before FT                       & 0.5546 & 0.3913 & 0.3979 & 0.3786 & 0.1518 & 0.1524 & 0.3377666667 \\
-			\hline SimAM After FT                        & 0.5774 & 0.4039 & 0.2919 & 0.2844 & 0.1201 & 0.0293 & 0.2845       \\
+	\subfloat{
+		\begin{tabular}{|l|r|r|r|r|r|r|r|}
+			\hline \textbf{Metric $\textbackslash$ Task} & SST2   & SST5   & MR     & Subj   & AGNews & CB     & Average         \\
+			\hline SimAM                                 & 0.5546 & 0.3913 & 0.3979 & 0.3786 & 0.1518 & 0.1524 & 0.3377          \\
+			\hline SimAM FT                              & 0.585  & 0.4047 & 0.498  & 0.487  & 0.4944 & 0.1875 & \textbf{0.4427} \\
+			\hline SimAM Per-Layer FT                    & 0.5774 & 0.4039 & 0.2919 & 0.2844 & 0.1201 & 0.0293 & 0.2845          \\
 			\hline
 		\end{tabular}
 	}
-	\caption{Top shows the original metrics. Bottom shows the metrics for the per-layer training process. The Sim AUO metric is higher for the per-layer training.}
+	\caption{SimAOU and SimAM on all 6 datasets, comparing similarity between baseline metrics, standard finetuning and per-layer fine-tuning.}
 	\label{tab:per_layer_metrics}
 \end{table*}
 
-\subsubsection{Per-Layer Training}
-We recreate the experiments of \cite{dai2023gpt} results using the per-layer training method.
+\subsection{Per-Layer Training}
+We recreate the experiments of \cite{dai2023gpt} using the per-layer training method.
 The results are shown in Table~\ref{tab:per_layer_metrics}.
 The SimAOU metric is higher for the per-layer training, but the SimAM metric is lower, and even lower than without fine-tuning for most tasks.
 
@@ -165,12 +177,21 @@ We hypothesize, at this point, that the reason for the lower SimAM metric is the
 The first layers of the model are now trained on a new objective, i.e their output is projected to the vocabulary space and the cross-entropy loss is computed on it instead of being passed for the next numerous layers.
 Because of that, the gradient norm may be larger than the gradient norm of the standard training process.
 We verify this hypothesis by measuring the norm of the gradients of each attention layer, during the standard training process and the per-layer training process.
-The results are shown in Figure.
+The results are shown in Figure \ref{grad_norm}.
 
 Following this finding, we attempt to apply gradient clipping to the per-layer training process with limited success.
 We experiment with different clipping values for one task (Subj) and are able to improve the metrics for this task, see Table~\ref{tab:per_layer_clipping_metrics}.
 Yet, we find that each task requires a different clipping value, and aim to find a more principled approach.
 We attempt to clip the gradients by normalizing them to allow a maximum norm that is the norm measured in the standard fine-tuning, but this does not improve the results.
+
+
+\begin{figure*}%
+	\centering
+	\subfloat{{\includegraphics[width=6cm]{per_layer_grad_norm (1).png}}}%
+	\subfloat{{\includegraphics[width=6cm]{full_ft_grad_norm.png}}}%
+	\caption{The gradient norm of each attention layer during the per-layer training process (left) and the standard fine-tuning process (right). The scale of the y-axis is different for each plot.}
+	\label{grad_norm}
+\end{figure*}
 
 
 \begin{table*}[t]
@@ -191,7 +212,7 @@ We attempt to clip the gradients by normalizing them to allow a maximum norm tha
 			\hline \textbf{Metric $\textbackslash$ Task} & Subj   \\
 			\hline Sim AUO Random                        & 0.0022 \\
 			\hline Sim AUO FT                            & 0.348  \\
-			\hline SimAM Before FT                       & 0.3786 \\
+			\hline SimAM                                 & 0.3786 \\
 			\hline SimAM After FT                        & 0.4227 \\
 			\hline
 		\end{tabular}
@@ -215,7 +236,6 @@ We attempt to clip the gradients by normalizing them to allow a maximum norm tha
 	\label{tab:per_layer_clipping_metrics}
 \end{table*}
 
-\paragraph{Accuracy}
 % We first show the validation accuracy in the ZSL, ICL, and finetuning settings on six classification datasets in Table~\ref{tab:acc}. 
 % Compared with ZSL, ICL and finetuning both achieve considerable improvements, which means the optimizations they make are both helpful to these downstream tasks. 
 % In addition, we find that ICL is better at few-shot scenarios than finetuning. 
@@ -235,7 +255,8 @@ We attempt to clip the gradients by normalizing them to allow a maximum norm tha
 % As a baseline metric for SimAM, \textbf{\textit{ZSL SimAM}} computes the similarity between ICL attention weights and ZSL attention weights. 
 % Comparing these two metrics, we also observe that compared with ZSL, ICL is more inclined to generate attention weights similar to those of finetuning. 
 % Again, at the attention behavior level, we prove that ICL behaves similarly to finetuning. 
-
+\subsection{Linearization}
+\input{linearization_results.tex}
 \section{Discussions}
 \subsection{Existence of an optimization process similar to ICL}
 The mathematical analysis in Section~\ref{sec:icl_dual} suggests a similarity between ICL and finetuning.
@@ -248,7 +269,10 @@ Hence, whether such an optimization process (or any kind of process) exists is s
 
 \section{Conclusion}
 Following recent research that suggested a theoretical equivalency between in-context learning (ICL) and gradient descent (GD)-based fine-tuning, we've attempted to further explore this relationship in practical settings.
-We experimented with a new training process 
+We experimented with a new training process that we call per-layer training,
+and provided some empricial evidence to suggest that this process may explain the underlying mechanism of ICL better than standard fine-tuning.
+Another experiment that we try is to fine-tune the model with linear approximation of it.
+In our discussion section we discuss the limitations of our experiments, we also suggest that whether an optimization process similar to ICL exists is still an open question.
 \section{Acknowledgement}
 \input{acknowledge.tex}
 

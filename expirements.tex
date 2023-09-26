@@ -9,14 +9,14 @@ In the following sections we describe the evaluation metrics used to compare the
 To ensure an optimal comparison, we have adopted the identical metrics as introduced in \cite{dai2023gpt}:
 We design three metrics to measure the similarity between ICL and finetuning at three different levels: the prediction level, the representation level, and the attention behavior level. 
 
-\paragraph{Prediction Recall}
+% \paragraph{Prediction Recall}
 
-From the perspective of model prediction, models with similar behavior should have aligned predictions.
-We measure the recall of correct ICL predictions to correct finetuning predictions.
-Given a set of test examples, we count the subsets of examples correctly predicted by each model: $C_{\text{ZSL}}, C_{\text{ICL}}, C_{\text{FT}}$.
-To compare the update each method induces to the model's prediction we subtract correct predictions made in the ZSL setting.
-Finally we compute the \textbf{Rec2FTP} score as: $\frac{ \sizeof{ \left( C_{\text{ICL}} \cap C_{\text{FT}} \right) \setminus C_{\text{ZSL}} } }{ \sizeof{ C_{\text{FT}} \setminus C_{\text{ZSL}} } }$ .
-A higher Rec2FTP score suggests that ICL covers more correct behavior of finetuning from the perspective of the model prediction.
+% From the perspective of model prediction, models with similar behavior should have aligned predictions.
+% We measure the recall of correct ICL predictions to correct finetuning predictions.
+% Given a set of test examples, we count the subsets of examples correctly predicted by each model: $C_{\text{ZSL}}, C_{\text{ICL}}, C_{\text{FT}}$.
+% To compare the update each method induces to the model's prediction we subtract correct predictions made in the ZSL setting.
+% Finally we compute the \textbf{Rec2FTP} score as: $\frac{ \sizeof{ \left( C_{\text{ICL}} \cap C_{\text{FT}} \right) \setminus C_{\text{ZSL}} } }{ \sizeof{ C_{\text{FT}} \setminus C_{\text{ZSL}} } }$ .
+% A higher Rec2FTP score suggests that ICL covers more correct behavior of finetuning from the perspective of the model prediction.
 
 %This measure is agnostic to the inner workings of the attention mechanism.
 
@@ -33,21 +33,32 @@ Similarly, after finetuning, we calculate the cosine similarity between $m^{(l,h
 
 
 \subsection{Prediction Alignment}
-In this section we focus on the perspective of model predictions, regarding both ICL and finetuning as black-box updates to the zero-shot setting prediction.
+In this section we focus on the perspective of model predictions, regarding both ICL and finetuning as black-box updates to the original zero-shot prediction.
 While this analysis provides less insight into the inner workings of ICL, prediction alignment is easily interpretable and seems necessary for downstream applications of such comparisons.
 
-We revisit the results of \cite{dai2023gpt}, and note the discrepancy between the accuracy of the finetuned model and the ICL setting.
-Our evaluation shows an average relative difference of $19.38\%$ between ICL and finetuning accuracy with respect to the original model.
-To better understand .... we measure .... reference fig
-
-Specifically \cite{dai2023gpt} find that ICL achieves high \textbf{Rec2FTP} scores, which means it covers most of the correct predictions of finetuning.
+Revisiting the results of \cite{dai2023gpt}, the authors find that find that ICL achieves high \textbf{Rec2FTP} scores across multiple tasks, which means it covers most of the correct predictions of finetuning. 
+However their results show a discrepancy between the accuracy of the finetuned model and the ICL setting, average difference of $\textbf{19.38\%}$ relative to the original zero-shot accuracy (Table \ref{acc_rpa}).
 %relative diff in acc by task (1_3B)[0.2666666666666666, 0.13994910941475827, 0.24279210925644915, 0.16804407713498629, 0.30021598272138245, 0.045333333333333406]$%
-We argue that this metric is insufficient because (1) it does not account for the accuracy discrepancy, (2) it does not reflect incorrect prediction updates which may reflect meaningful behavioral changes in the model.
+We argue that \textbf{Rec2FTP} is insufficient to quantify prediction alignment in this setting because:
+(1) it does not the difference between the number of changes induced by each method;
+(2) it does not account for incorrect prediction changes.
+Figure \ref{fig:prediction_alignment} shows the number of prediction updates induced by each method.
+We measure both changes that result in correct and incorrect predictions.
+The results show that overall ICL is more inclided to change the ZSL prediction.
+Another noticable trend is that although ICL covers almost all FT correct prediction changes (high Rec2FTP), there are many incorrect prediction updates unique both to FT and to ICL.
+This observation shows the importance of measuring incorrect prediction changes as well.
 
+\input{resources/images/prediction_alignment.tex}
 
-To address these fallacies we propose a measurement of \textbf{relative prediction alignment} (RPA) to quantify the similarity between both prediction updates.
+We propose a metric that respects these factors: \textbf{relative prediction alignment} (RPA) to quantify prediction alignment in this setting.
 Given a validation set, we denote the subset of example whose prediction is changed with regards to the zero-shot setting by ICL or FT by $D_\text{ICL}$ and $D_\text{FT}$ respectively.
-We define the RPA of these updates by: $\frac{\sizeof{D_\text{ICL} \cap D_\text{FT}}}{\sizeof{D_\text{ICL}} + \sizeof{D_\text{FT}} - \sizeof{D_\text{ICL} \cap D_\text{FT}}}$.     
+We define the RPA of these updates by: 
+\begin{equation*}
+  \text{RPA}_{D_\text{ICL}, D_\text{FT}} = \frac{\sizeof{D_\text{ICL} \cap D_\text{FT}}}{\sizeof{D_\text{ICL}} + \sizeof{D_\text{FT}} - \sizeof{D_\text{ICL} \cap D_\text{FT}}} 
+\end{equation*}
 
+\input{resources/tables/acc_rpa_.tex}
 
-\input{}
+We report the RPA scores across all tasks in table \ref{tab:acc_rpa}.
+For each we also compute the RPA scores computed over only for prediction changes to correct labels, and those for incorrect labels.
+The results show that correct prediction changes are more aligned between the two methods.

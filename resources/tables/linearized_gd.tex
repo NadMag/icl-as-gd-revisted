@@ -1,0 +1,21 @@
+\begin{table*}
+	\centering
+  \setlength{\tabcolsep}{7pt}
+	\begin{tabular}{l | c c c c c }
+    \toprule
+    & SST2   & SST5   & MR     & Subj  & Average \\
+		\midrule
+    SimAOU (Random)   & 0.001  & 0.002  & 0.001  & 0.002 & 0.002          \\
+		SimAOU (FT)       & 0.1091 & \textbf{0.113}  & \textbf{0.219}  & \textbf{0.193} & \textbf{0.158} \\
+		SimAOU (FT Lin)   & \textbf{0.122}  & 0.0789 & 0.171  & 0.148 & 0.130          \\
+    \midrule
+    SimAM (Before FT)     & 0.5547 & 0.3914 & 0.398 & 0.378 & 0.430          \\
+    SimAM (After FT)      & \textbf{0.585}  & \textbf{0.404}  & \textbf{0.498} & \textbf{0.487} & \textbf{0.493} \\
+    SimAM (After FT Lin)  & 0.573  & 0.403  & 0.448 & 0.449 & 0.468          \\
+  \end{tabular}
+
+	\caption{
+    SimAOU and SimAM comparison of standard FT and FT using the linear approximation of the model.	 		
+  }
+	\label{tabel:lin_results}
+\end{table*}

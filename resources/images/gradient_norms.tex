@@ -1,0 +1,12 @@
+\begin{figure*}%
+	\centering
+	\subfloat{{\includegraphics[width=6cm]{resources/images/full_ft_grad_norm.png}}}%
+	\subfloat{{\includegraphics[width=6cm]{resources/images/causal_layer_grad_norm.png}}}%
+	\caption{Heatmap of $\ell_2$ norms of the gradients computed during finetuning on the Subj task.
+	 \textbf{Horizontal Axis}: training demonstration number. 
+	 \textbf{Vertical Axis}: layer index in ascending order (from input to network output).
+	 \textbf{Left}: Standard FT.
+	 \textbf{Right}: Layer-Causal FT (norm magnitude in logarithmic scale).
+	 }
+	\label{fig:grad_norm_comparison}
+\end{figure*}

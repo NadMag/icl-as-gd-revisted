@@ -1,17 +1,17 @@
-In recent studies \cite{pmlr-v202-von-oswald23a,dai2023gpt}, attempts have been made to establish a link between in-context learning (ICL) and the fine-tuning process using gradient descent (GD) in transformer models. One common conclusion that researchers frequently derive from these studies is that "ICL essentially enacts gradient descent." Nevertheless, it's worth noting that much of the analysis in these investigations focused on models with linear attention, which can be considered as a simplified setting.
+In recent years, large language models \cite{brown20gpt3} have shown strong emergent in-context learning ability \cite{wei2022emergent} where a pretrained model's performance significantly improves on various downstream tasks by simply conditioning on a few input-label pairs (demonstrations).
+Despite its success and avid research regarding ICL abilities, the inner workings behind the process are still not fully understood.
+In-context learning operates in a seemingly different approach to few-shot and meta-learning which require additional parameter updates.
+Nevertheless a series of recent works show significant similarities between ICL and gradient descent based optimization \cite{irie22dual, pmlr-v202-von-oswald23a, akyürek2023learning}.  
 
-In their study, \cite{dai2023gpt} expand their findings from linear attention to conventional attention mechanisms, relying on empirical evidence to support their assertions.
-Their experiments convincingly demonstrate that a model fine-tuned through gradient descent steps and a model prompted with in-context examples appear to execute similar functions. In simpler terms, they exhibit analogous behaviors when processing inputs. Furthermore, they observe a substantial overlap in the internal behaviors of these two models.
-Yet, it remains unclear how a transformer's forward pass calculates its backward pass, even if it's done in a clever way involving a smaller transformer embedded within the weights of the original transformer, as suggested by some. Even if this is theoretically achievable, it's a complex concept to put into practice. In contrast, when it comes to linear models, the gradient step has a straightforward mathematical formula, making it much simpler to handle.
-
-In \cite{pmlr-v202-von-oswald23a}, they put forth a less ambitious idea. They suggest that the model essentially carries out a kind of gradient descent on a simple linear model applied to the original deep representations calculated during the forward pass.
-Using linear models with detailed feature representations is known to be highly effective in accomplishing various tasks.
-
-
-In this study, our goal is to demonstrate that this principle holds true in this context as well. This can support our argument that extensive fine-tuning is not required, and a basic linear model that uses the original hidden states as inputs suffices.
-To do so, we perform three experiments:
+In this paper, we study the results of \cite{dai2023gpt} which empirically show connections between ICL and standard finetuning on large GPT models and language classification tasks.
+We identify both empirical differences in previous results such as a discrepancy in accuracy, and intrinsic theoretical differences in layer causality and update expressiveness.
+Our goal is to quantify and demonstrate how these factors affect the results of the comparison between the two methods.
+To do so, we perform experiments on three levels:
 \begin{itemize}
-    \item \textbf{Linearization}: We replicated the similarities results of \cite{dai2023gpt} and compared them with a simplified version the function we optimize by linearization \cite{linearization23}.
-    \item \textbf{Per Layer Training}: We trained the GPT model while detaching the output of each layer from the computational graph, meaning that each layer does not propagate the gradient back to previous layers.
-    \item \textbf{Labels Switching}: To further confirm the results of \cite{dai2023gpt}, motivated by textbf{TODO: add relevant labels experiments papers}, we evaluated the change in similarity when providing false labels both in FT and ICL.
+    \item \textbf{Prediction Alignment}: From the model prediction perspective, we demonstrate that ICL's and finetuning's predictions differ on most tasks. 
+    We introduce a new metric: relative prediction alignment (RPA) to better measure similarity with ICL in this setting.
+    \item \textbf{Layer Causality}: Focusing on the flow of information in the model, we identify a that the update induced to each layers prediction in finetuning depends on all the others (no layer causality).
+    To study how this difference affects the similarity with ICL, we propose a new layer causal finetuning method and evaluate its similarity with ICL.
+    \item \textbf{Update Expressiveness}: Inspired by recent studies large language models from the neural tangent kernel (NTK) perspective \cite{linearization23},
+    we test whether comparable similarities with ICL could be achieved by performing finetuning on a less expressive model, namely the model's linear approximation.
 \end{itemize}

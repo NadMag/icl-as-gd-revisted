@@ -2,7 +2,7 @@
 \label{sec:icl_dual_1}
 
 The view of language models as meta-optimizers originates from the presentation of the dual and primal forms of the perceptron \cite{Aizerman2019TheoreticalFO}.
-This notion was later expressed in terms key/value/query-attention operation by by \cite{irie22dual,dai2023gpt,pmlr-v202-von-oswald23a} which apply it apply it in the modern context of deep neural networks.
+This notion was later expressed in terms key-value-query attention operation by by \cite{irie22dual,dai2023gpt,pmlr-v202-von-oswald23a} which apply it apply it in the modern context of deep neural networks.
 They show that linear layers optimized by gradient descent have a dual representation as linear attention.
 
 Let $W \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$ be the weight matrix of a linear layer initialized at $W_0$, and let $\mathbf{x}, \mathbf{x}_1, \dots, \mathbf{x}_n  \in \mathbb{R}^{d_{\text{in}}}$ be the input and training examples representation respectively.

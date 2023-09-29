@@ -1,0 +1,21 @@
+\begin{table*}[h!]
+	\centering
+	\setlength{\tabcolsep}{7pt}
+		\begin{tabular}{l| c c c c c c c }
+			\toprule
+			& \textbf{SST2} & \textbf{SST5} & \textbf{MR} & \textbf{Subj} & \textbf{AGNews} & \textbf{CB} & \textbf{Average}         \\
+			\midrule
+			 SimAOU (Random)        & 0.0016 & 0.0025 & 0.0008 & 0.0022 & 0.0021 & 0.0037 & 0.0021          \\
+			 SimAOU (FT)            & 0.1091 & \textbf{0.113}  & 0.2190  & 0.1932  & 0.3053 & 0.2013 & 0.1901          \\
+			 SimAOU (Layer Casual FT)  & \textbf{0.2297} & 0.1065 & \textbf{0.3299} & \textbf{0.3439} & \textbf{0.3213} & \textbf{0.3435} & \textbf{0.2791} \\
+			 \midrule
+			 SimAM (ZSL)                 & 0.5546 & 0.3913 & 0.3979 & 0.3786 & 0.1518 & 0.1524 & 0.3377          \\
+			 SimAM (Standard FT)         & \textbf{0.5850}  & \textbf{0.4047} & \textbf{0.4980}  & \textbf{0.4870}  & \textbf{0.4944} & \textbf{0.1875} & \textbf{0.4427} \\
+			 SimAM (Layer Causal FT)     & 0.5774 & 0.4039 & 0.2919 & 0.2844 & 0.1201 & 0.0293 & 0.2845          \\	
+		\end{tabular}
+		\caption{SimAOU and SimAM comparison of standard FT and layer causal FT across six classification datasets.
+			Layer causal FT achieves higher SimAOU across 5 out of 6 tasks, yet its SimAM is significantly lower. 		
+		}
+		\label{tab:layer_causal}
+\end{table*}
+		

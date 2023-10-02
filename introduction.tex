@@ -4,14 +4,18 @@ In-context learning operates in a seemingly different approach to few-shot and m
 Nevertheless a series of recent works show significant similarities between ICL and gradient descent based optimization \cite{irie22dual, pmlr-v202-von-oswald23a, akyürek2023learning}.  
 
 In this paper, we study the results of \cite{dai2023gpt} which empirically show connections between ICL and standard finetuning on large GPT models and language classification tasks.
-We identify both empirical differences in previous results such as a discrepancy in accuracy, and intrinsic theoretical differences in layer causality and update expressiveness.
-Our goal is to quantify and demonstrate how these factors affect the results of the comparison between the two methods.
-To do so, we perform experiments on three levels:
+We identify both empirical and theoretical considerations not accounted for by their analysis:
+%, we quantify and demonstrate how these considerations affect the similarity between ICL and finetuning.
 \begin{itemize}
-    \item \textbf{Prediction Alignment}: From the model prediction perspective, we demonstrate that ICL's and finetuning's predictions differ on most tasks. 
-    We introduce a new metric: relative prediction alignment (RPA) to better measure similarity with ICL in this setting.
-    \item \textbf{Layer Causality}: Focusing on the flow of information in the model, we identify a that the update induced to each layers prediction in finetuning depends on all the others (no layer causality).
-    To study how this difference affects the similarity with ICL, we propose a new layer causal finetuning method and evaluate its similarity with ICL.
+    \item \textbf{Prediction Alignment}: From the perspective of model prediction, we show that ICL's and finetuning's predictions are poorly aligned on most tasks. 
+    Our results show that both methods yield unique, different prediction updates, especially when taking erroneous changes into account.
+    Motivated by this observations we propose the use of the Jaccard index between relative prediction changes.    
+
+    \item \textbf{Layer Causality}: an intrinsic difference in information flow of attention output updates between standard finetuning and ICL.
+    Think of the update induced by each method to the output of the l-th attention layer in the model.
+    In ICL the this update is autoregressive, in the sense that it depends previous (lower) layer's output only.
+    In standard finetuning on the other hand, the update to the attention output of the l-th layer, depends on the the output of all others - as it is derived from the gradient with respect to all model parameters.   
+    
     \item \textbf{Update Expressiveness}: Inspired by recent studies large language models from the neural tangent kernel (NTK) perspective \cite{linearization23},
     we test whether comparable similarities with ICL could be achieved by performing finetuning on a less expressive model, namely the model's linear approximation.
 \end{itemize}

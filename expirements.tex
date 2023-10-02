@@ -33,12 +33,12 @@ Similarly, after finetuning, we calculate the cosine similarity between $m^{(l,h
 
 \subsection{ICL Predictions Poorly Align with Finetuning}
 \input{resources/images/prediction_alignment.tex}
-\input{resources/tables/acc_rpa_.tex}
+\input{resources/tables/acc_jaccard.tex}
 In this section we focus on the perspective of model predictions, regarding both ICL and finetuning as black-box updates to the original zero-shot prediction.
 While this analysis provides less insight into the inner workings of ICL, prediction alignment is easily interpretable and seems necessary for downstream applications of such comparisons.
 
 Revisiting the results of \cite{dai2023gpt}, the authors find that find that ICL achieves high recall to finetuning (Rec2FTP) scores across multiple tasks, which means it covers most of the correct predictions of finetuning. 
-However their results show a discrepancy between the accuracy of the finetuned model and the ICL setting, average difference of $\textbf{19.38\%}$ relative to the original zero-shot accuracy (Table \ref{tab:acc_rpa}).
+However their results show a discrepancy between the accuracy of the finetuned model and the ICL setting, average difference of $\textbf{19.38\%}$ relative to the original zero-shot accuracy (Table \ref{tab:acc_jaccard}).
 
 
 We argue that Rec2FTP is insufficient to quantify prediction alignment in this setting because:
@@ -49,16 +49,15 @@ The results show that overall ICL is more inclined to change the ZSL prediction.
 Note that although ICL covers almost all FT correct prediction changes (high Rec2FTP), in most tasks unique FT and to ICL predictions constitute the majority of all updates.
 This observation shows the importance of measuring incorrect prediction changes as well.
 
-We propose a metric that respects these factors: \textbf{relative prediction alignment} (RPA) to quantify prediction alignment in this setting.
+Instead, we measure the \textbf{Jaccard Index} of both methods prediction changes, to quantify prediction alignment in this setting.
 Given a validation set, we denote the subset of example whose prediction is changed with regards to the zero-shot setting by ICL or FT by $D_\text{ICL}$ and $D_\text{FT}$ respectively.
-We define the RPA of these updates by: 
+The Jaccard index between the updates is given by: 
 \begin{equation*}
-  \text{RPA}_{D_\text{ICL}, D_\text{FT}} = \frac{\sizeof{D_\text{ICL} \cap D_\text{FT}}}{\sizeof{D_\text{ICL}} + \sizeof{D_\text{FT}} - \sizeof{D_\text{ICL} \cap D_\text{FT}}} 
+  \mathcal{J}\left( D_\text{ICL}, D_\text{FT} \right) = \frac{\sizeof{D_\text{ICL} \cap D_\text{FT}}}{\sizeof{D_\text{ICL}} + \sizeof{D_\text{FT}} - \sizeof{D_\text{ICL} \cap D_\text{FT}}} 
 \end{equation*}
 
-We report the RPA scores across all tasks in table \ref{tab:acc_rpa}.
-For each we also compute the RPA scores computed over only for prediction changes to correct labels, and those for incorrect labels.
-The results show that correct prediction changes are more aligned between the two methods.
+We report the indexes across all tasks in Table \ref{tab:acc_jaccard}.
+For each we also compute the Jaccard index computed over only prediction changes to correct labels, and those for incorrect labels separately.
 
 
 \subsection{Layer Causality in Finetuning}

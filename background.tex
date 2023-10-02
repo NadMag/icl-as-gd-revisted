@@ -2,7 +2,7 @@
 \label{sec:icl_dual_1}
 
 The view of language models as meta-optimizers originates from the presentation of the dual and primal forms of the perceptron \cite{Aizerman2019TheoreticalFO}.
-This notion was later expressed in terms key-value-query attention operation by by \cite{irie22dual,dai2023gpt,pmlr-v202-von-oswald23a} which apply it apply it in the modern context of deep neural networks.
+This notion was later expressed in terms of key-value-query attention operation by \cite{irie22dual,dai2023gpt,pmlr-v202-von-oswald23a} which applied it in the modern context of deep neural networks.
 They show that linear layers optimized by gradient descent have a dual representation as linear attention.
 
 Let $W \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$ be the weight matrix of a linear layer initialized at $W_0$, and let $\mathbf{x}, \mathbf{x}_1, \dots, \mathbf{x}_n  \in \mathbb{R}^{d_{\text{in}}}$ be the input and training examples representation respectively.
@@ -26,13 +26,13 @@ Thus the computation of the optimized linear layer can be formulated as
     \label{equ:sgd_attn_dual}
 \end{equation}
 where $\operatorname{LinearAttn}(V, K, \mathbf{q})$ denotes the linear attention operation.
-From the perspective of attention we regard training examples $X$ as keys, their corresponding gradients as values, and the current input $\mathbf{x}$ as the query.
+From the perspective of attention, we regard training examples $X$ as keys, their corresponding gradients as values, and the current input $\mathbf{x}$ as the query.
 
 
 \subsection{Understanding Transformer Attention as Meta-Optimization}
 \label{sec:icl_dual}
-In this section we explain the simplified mathematical view of in-context learning as a process of meta-optimization presented in \cite{dai2023gpt}.
-For the purpose of analysis, it is useful to view the change to the output induced by attention to the demonstration tokens as equivalent parameter update $\Delta W_{\text{ICL}}$ that take effect on the original attention parameters.
+In this section, we explain the simplified mathematical view of in-context learning as a process of meta-optimization presented in \cite{dai2023gpt}.
+For analysis, it is useful to view the change to the output induced by attention to the demonstration tokens as equivalent parameter update $\Delta W_{\text{ICL}}$ that takes effect on the original attention parameters.
 
 Let $\mathbf{x} \in \mathbb{R}^{d}$ be the input representation of a query token $t$, and $\mathbf{q} = W_{Q} \mathbf{x} \in \mathbb{R}^{d^{\prime}}$ be the attention query vector. 
 We use the relaxed linear attention model, whereby the softmax operation and the scaling factor are omitted:
@@ -64,10 +64,10 @@ Following the reverse direction of Equation (\ref{equ:sgd_attn_dual}), you arriv
     \label{equ:icl_opti_dual}
 \end{equation}
 
-By analogy with Equation(\ref{equ:sgd_attn_dual}), we can regard $W_{K} \textbf{x}^{\prime}_i$ as the training examples and $W_{V} X^{\prime}$ as their corresponding meta-gradients. 
+By analogy with Equation (\ref{equ:sgd_attn_dual}), we can regard $W_{K} \textbf{x}^{\prime}_i$ as the training examples and $W_{V} X^{\prime}$ as their corresponding meta-gradients. 
 
 % \subsection{Linearization of a Model}
-% Resent works suggest a function we optimize can significantly simplify by a method called linearization \cite{10.5555/3454287.3455056, linearization23}.
+% Recent works suggest a function we optimize can significantly simplify by a method called linearization \cite{10.5555/3454287.3455056, linearization23}.
 % Specifically, these works suggest that it is possible to approximate a pre-trained model in the vicinity of its initial parameters:
 % \begin{equation}
 %     f_{\theta_0 + \delta \theta}(x) \approx f_{\theta_0}(x) + \delta \theta^\textrm{T} \nabla_{\theta_0} f(x) := f_{\delta \theta}^{\textrm{lin}}(x; \theta_0)

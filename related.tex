@@ -1,9 +1,9 @@
-A series of recent works explores the similarities between ICL and gradient descent based optimization. 
+A series of recent works explores the similarities between ICL and gradient descent-based optimization. 
 \cite{akyürek2023learning} show that Transformer-based in-context learners can implement standard optimization algorithms on linear models implicitly.
-\cite{pmlr-v202-von-oswald23a} provide a construction that for a linear attention-only Transformers models that implicitly perform gradient descent like procedure.
+\cite{pmlr-v202-von-oswald23a} provide a construction for linear attention-only Transformers models that implicitly perform gradient descent like procedure.
 \cite{irie22dual} rewrite the dual form of a linear perceptron in terms of query-key-value attention, and use it to analyze how a trained model is affected by its training samples.
 
-Different from these works, we base our study on \cite{dai2023gpt} which study large GPT transformers on structured language classification tasks.
+Different from these works, we base our study on \cite{dai2023gpt} which studies large GPT transformers on structured language classification tasks.
 We study how different aspects of ICL can affect the results of the comparison made in \cite{dai2023gpt}.
-On the prediction level, we introduce the RPA metric for evaluation of prediction level alignment.
-Furthermore, while \cite{dai2023gpt} compare standard GD based finetuning, we test a novel layer causality aware finetuning process.
+On the prediction level, we introduce the RPA metric for the evaluation of prediction level alignment.
+Furthermore, while \cite{dai2023gpt} compares standard GD-based finetuning, we test a novel layer causality-aware finetuning process.

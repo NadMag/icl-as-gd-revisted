@@ -1,7 +1,7 @@
-In recent years, large language models \cite{brown20gpt3} have shown strong emergent in-context learning ability \cite{wei2022emergent} where a pretrained model's performance significantly improves on various downstream tasks by simply conditioning on a few input-label pairs (demonstrations).
+In recent years, large language models \cite{brown20gpt3} have shown strong emergent in-context learning ability \cite{wei2022emergent} where a pre-trained model's performance significantly improves on various downstream tasks by simply conditioning on a few input-label pairs (demonstrations).
 Despite its success and avid research regarding ICL abilities, the inner workings behind the process are still not fully understood.
 In-context learning operates in a seemingly different approach to few-shot and meta-learning which require additional parameter updates.
-Nevertheless a series of recent works show significant similarities between ICL and gradient descent based optimization \cite{irie22dual, pmlr-v202-von-oswald23a, akyürek2023learning}.  
+Nevertheless, a series of recent works show significant similarities between ICL and gradient descent-based optimization \cite{irie22dual, pmlr-v202-von-oswald23a, akyürek2023learning}.  
 
 In this paper, we study the results of \cite{dai2023gpt} which empirically show connections between ICL and standard finetuning on large GPT models and language classification tasks.
 We identify both empirical and theoretical considerations not accounted for by their analysis:
@@ -9,13 +9,13 @@ We identify both empirical and theoretical considerations not accounted for by t
 \begin{itemize}
     \item \textbf{Prediction Alignment}: From the perspective of model prediction, we show that ICL's and finetuning's predictions are poorly aligned on most tasks. 
     Our results show that both methods yield unique, different prediction updates, especially when taking erroneous changes into account.
-    Motivated by this observations we propose the use of the Jaccard index between relative prediction changes.    
+    Motivated by these observations we propose the use of the Jaccard index between relative prediction changes.    
 
-    \item \textbf{Layer Causality}: an intrinsic difference in information flow of attention output updates between standard finetuning and ICL.
-    Think of the update induced by each method to the output of the l-th attention layer in the model.
-    In ICL the this update is autoregressive, in the sense that it depends previous (lower) layer's output only.
-    In standard finetuning on the other hand, the update to the attention output of the l-th layer, depends on the the output of all others - as it is derived from the gradient with respect to all model parameters.   
+    \item \textbf{Layer Causality}: an intrinsic difference in the information flow of attention output updates between standard finetuning and ICL.
+    Think of the update induced by each method to the output of the $l$-th attention layer in the model.
+    In ICL this update is autoregressive, in the sense that it depends on the previous (lower) layer's output only.
+    In standard finetuning, on the other hand, the update to the attention output of the $l$-th layer depends on the output of all others - as it is derived from the gradient with respect to all model parameters.   
     
-    % \item \textbf{Update Expressiveness}: Inspired by recent studies large language models from the neural tangent kernel (NTK) perspective \cite{linearization23},
-    % we test whether comparable similarities with ICL could be achieved by performing finetuning on a less expressive model, namely the model's linear approximation.
+    % \item \textbf{Update Expressiveness}: Inspired by recent studies of large language models from the neural tangent kernel (NTK) perspective \cite{linearization23},
+    % We test whether comparable similarities with ICL could be achieved by performing finetuning on a less expressive model, namely the model's linear approximation.
 \end{itemize}

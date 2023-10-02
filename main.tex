@@ -50,17 +50,17 @@ Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
 
 \begin{abstract}
 	In-context learning (ICL) has shown impressive results in few-shot learning tasks, yet its underlying mechanism is still not fully understood.
-	Recent works suggests that ICL could be thought of as an gradient descent (GD) based meta-optimization process.
-	While promising, these results mainly focus on simplified settings of ICL and provide only preliminary evaluation of the similarities between the two methods. 
-	In this work we revisit the comparison between ICL and GD based finetuning and study what properties of ICL an equivalent process must follow. 
+	Recent works suggest that ICL could be thought of as a gradient descent (GD) based meta-optimization process.
+	While promising, these results mainly focus on simplified settings of ICL and provide only a preliminary evaluation of the similarities between the two methods. 
+	In this work, we revisit the comparison between ICL and GD-based finetuning and study what properties of ICL an equivalent process must follow. 
 	% Prediction level
-	We begin in the model prediction level and reexamine how ICL and finetuning's prediction updates differ.
+	We begin at the model prediction level and reexamine how ICL and finetuning's prediction updates differ.
 	%Motivated by these results we propose a novel evaluation metric which we term relative prediction alignment (RPA).
 	% Layer Causality
-	Next we address the differences in layer causality between ICL and standard finetuning.
+	Next, we address the differences in layer causality between ICL and standard finetuning.
 	To study how this dissimilarity affects the model's behavior we propose a causally aware finetuning process and compare it with previous results. 
 	%We find that the causally aware process competes with standard finetuning across several comparison metrics.
-	% Linearalization
+	% Linearization
 	% Lastly we show that finetuning using a linear approximation of the model achieves comparable results to standard finetuning,
 	% suggesting that the underlying behavior may be explainable by simpler optimization processes.
 	% [git]
@@ -85,11 +85,11 @@ Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
 \input{related.tex}
 
 \section{Conclusion}
-Inspired by recent works, we attempted to further explore the relationship between in-context learning and gradient descent based finetuning in practical settings.
-We revisit existing work and show that ICL and FT predictions are misaligned and propose a better measure quantify this difference.
-% Motivated by inherit differences in expressive power between ICL and FT, we explore whether a simpler variant of GD may show similar results - with insufficient results.
-Finally, we address a fundamental difference in information flow between the methods, and suggest a novel FT method that respects layer causality.
-Our results show potential for a more plausible explanation of ICL, and may suggest exciting possible practical applications for embedding context into a model's weights.  
+Inspired by recent works, we attempted to further explore the relationship between in-context learning and gradient descent-based finetuning in practical settings.
+We revisit existing work and show that ICL and FT predictions are misaligned and propose a better measure to quantify this difference.
+% Motivated by inherited differences in expressive power between ICL and FT, we explore whether a simpler variant of GD may show similar results - with insufficient results.
+Finally, we address a fundamental difference in information flow between the methods and suggest a novel FT method that respects layer causality.
+Our results show potential for a more plausible explanation of ICL and may suggest exciting possible practical applications for embedding context into a model's weights.  
 \section{Acknowledgements}
 \input{acknowledgement.tex}
 

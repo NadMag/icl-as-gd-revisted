@@ -2,7 +2,7 @@
 
 We evaluated our experiments on six datasets. \textbf{SST2} \cite{socher-etal-2013-recursive} \textbf{SST5} \cite{socher-etal-2013-recursive}, \textbf{MR} \cite{10.3115/1219840.1219855} and \textbf{Subj} \cite{10.3115/1218955.1218990} are four datasets for sentiment classification; \textbf{AGNews} \cite{NIPS2015_250cf8b5} is a topic classification dataset; and \textbf{CB} \cite{Marneffe2019TheCI} is used
 for natural language inference.
-In our experiments, we use the same GPT-like pretrained language models used by \cite{dai2023gpt} with 1.3B released by fairseq\footnote{\url{https://github.com/facebookresearch/fairseq}}. 
+In our experiments, we use the same GPT-like pre-trained language models used by \cite{dai2023gpt} with 1.3B released by fairseq\footnote{\url{https://github.com/facebookresearch/fairseq}}. 
 
 \subsection{Evaluation Metrics}
 
@@ -18,7 +18,7 @@ The following sections describe the evaluation metrics adopted from \cite{dai202
 %This measure is agnostic to the inner workings of the attention mechanism.
 \input{resources/images/prediction_alignment.tex}
 \paragraph{Attention Output Direction (SimAOU)}
-This metrics quantifies the similarity between two updates to the attention output of a layer with respect to the zero-shot setting. 
+This metric quantifies the similarity between two updates to the attention output of a layer with respect to the zero-shot setting. 
 For a given query example, let $h^{(l)}_X$ represent the normalized output representation of the last token at the $l$-th attention layer within setting $X$.
 The updates induced by ICL and finetuning are given by $h^{(l)}_{\text{ICL}} - h^{(l)}_{\text{ZSL}}$ and $h^{(l)}_{\text{FT}} - h^{(l)}_{\text{ZSL}}$, respectively.
 The attention output similarity (\textbf{SimAOU}) is defined to be the cosine similarity between these updates averaged across all layers.
@@ -33,11 +33,11 @@ Similarly, after finetuning, we calculate the cosine similarity between $m^{(l,h
 
 \subsection{ICL Predictions Poorly Align with Finetuning}
 \input{resources/tables/acc_jaccard.tex}
-In this section we focus on the perspective of model predictions, regarding both ICL and finetuning as black-box updates to the original zero-shot prediction.
+In this section, we focus on the perspective of model predictions, regarding both ICL and finetuning as black-box updates to the original zero-shot prediction.
 While this analysis provides less insight into the inner workings of ICL, prediction alignment is easily interpretable and seems necessary for downstream applications of such comparisons.
 
-Revisiting the results of \cite{dai2023gpt}, the authors find that find that ICL achieves high recall to finetuning (Rec2FTP) scores across multiple tasks, which means it covers most of the correct predictions of finetuning. 
-However their results show a discrepancy between the accuracy of the finetuned model and the ICL setting, average difference of $\textbf{19.38\%}$ relative to the original zero-shot accuracy (Table \ref{tab:acc_jaccard}).
+Revisiting the results of \cite{dai2023gpt}, the authors find that ICL achieves high recall to finetuning (Rec2FTP) scores across multiple tasks, which means it covers most of the correct predictions of finetuning. 
+However, their results show a discrepancy between the accuracy of the finetuned model and the ICL setting, average difference of $\textbf{19.38\%}$ relative to the original zero-shot accuracy (Table \ref{tab:acc_jaccard}).
 
 
 We argue that Rec2FTP is insufficient to quantify prediction alignment in this setting because:
@@ -45,53 +45,53 @@ We argue that Rec2FTP is insufficient to quantify prediction alignment in this s
 (2) it does not account for incorrect prediction changes.
 Figure \ref{fig:prediction_alignment} shows the number of prediction updates induced by each method.
 The results show that overall ICL is more inclined to change the ZSL prediction.
-Note that although ICL covers almost all FT correct prediction changes (high Rec2FTP), in most tasks unique FT and to ICL predictions constitute the majority of all updates.
+Note that although ICL covers almost all FT correct prediction changes (high Rec2FTP), in most tasks unique FT and ICL predictions constitute the majority of all updates.
 This observation shows the importance of measuring incorrect prediction changes as well.
 
-Instead, we measure the \textbf{Jaccard Index} of both methods prediction changes, to quantify prediction alignment in this setting.
-Given a validation set, we denote the subset of example whose prediction is changed with regards to the zero-shot setting by ICL or FT by $D_\text{ICL}$ and $D_\text{FT}$ respectively.
+Instead, we measure the \textbf{Jaccard Index} of both methods' prediction changes, to quantify prediction alignment in this setting.
+Given a validation set, we denote the subset of examples whose prediction is changed with regards to the zero-shot setting by ICL or FT by $D_\text{ICL}$ and $D_\text{FT}$ respectively.
 The Jaccard index between the updates is given by: 
 \begin{equation*}
   \mathcal{J}\left( D_\text{ICL}, D_\text{FT} \right) = \frac{\sizeof{D_\text{ICL} \cap D_\text{FT}}}{\sizeof{D_\text{ICL}} + \sizeof{D_\text{FT}} - \sizeof{D_\text{ICL} \cap D_\text{FT}}} 
 \end{equation*}
 
 We report the indexes across all tasks in Table \ref{tab:acc_jaccard}.
-For each we also compute the Jaccard index computed over only prediction changes to correct labels, and those for incorrect labels separately.
+For each, we also compute the Jaccard index computed over only prediction changes to correct labels, and those for incorrect labels separately.
 
 
 \subsection{Layer Causality in Finetuning}
 \label{sec:layer_causality}
 
-In this section we highlight an intrinsic difference in information flow of attention output updates between standard finetuning and ICL.
+In this section, we highlight an intrinsic difference in the information flow of attention output updates between standard finetuning and ICL.
 
 \begin{enumerate}
 	\item \textbf{Layer Causality}: In ICL the update to the output of the $l$-th attention layer is dependent only on the output of previous (lower) layers.
-  On contrast, the update to the $l$-th attention output induced by finetuning is determined by the gradient of the entire model's trainable parameters.
+  In contrast, the update to the $l$-th attention output induced by finetuning is determined by the gradient of the entire model's trainable parameters.
 	
-  \item \textbf{Sequential Update}: Equation \ref{equ:icl_opti_dual} shows that in ICL each attention layer's output is updated sequently throughout the model's depth axis.
-  However, in GD based finetuning all layer's parameters are updated in a single concurrent step.
+  \item \textbf{Sequential Update}: Equation \ref{equ:icl_opti_dual} shows that in ICL each attention layer's output is updated frequently throughout the model's depth axis.
+  However, in GD-based finetuning, all layer's parameters are updated in a single concurrent step.
 \end{enumerate}
 
 \input{resources/images/causal_layer_diagram.tex}
 \input{resources/tables/layer_causal_table.tex}
 
-Motivated by these observations we propose a layer causality aware finetuning method where each layer is updated individually.
+Motivated by these observations we propose a layer causality-aware finetuning method where each layer is updated individually.
 Specifically, we project the output of each layer into the label space using the pertained projection head and compute the cross-entropy loss of this prediction.
 % Check if this is implemented %
-We update each layer sequentially, regarding the previous layers output as constant.  
+We update each layer sequentially, regarding the output of the previous layer as constant.  
 
-We evaluate our method in comparison to standard finetuning using using the experiments proposed by \cite{dai2023gpt}.
+We evaluate our method in comparison to standard finetuning using the experiments proposed by \cite{dai2023gpt}.
 Table~\ref{tab:layer_causal} shows the SimAOU and SimAM measurements of both methods in comparison to ICL.
 Layer causal FT achieves higher SimAOU in 5 out of 6 tasks, but its SimAM is significantly lower.
 
 We highlight two fallacies of our proposed method, and how they might have contributed to lower performance and SimAM scores.
 \begin{itemize}
-	\item Lower layers in the models are not trained to directly produce predictions, thus our FT method causes significant drift from the original models learned weights.
-	\item The gradients applied to lower layers have bigger magnitude in layer causal FT.
+	\item Lower layers in the models are not trained to directly produce predictions, thus our FT method causes significant drift from the original models' learned weights.
+	\item The gradients applied to lower layers have a bigger magnitude in layer causal FT.
 				During pertaining the gradient of early layers is propagated throughout the model which usually dampens its norm.  
 \end{itemize}
 
-We verify this hypothesis by comparing the norm of  each attention layer's gradient during the standard FT process and layer causal FT in Figure \ref{fig:grad_norm_comparison}.
+We verify this hypothesis by comparing the norm of each attention layer's gradient during the standard FT process and layer causal FT in Figure \ref{fig:grad_norm_comparison}.
 
 \input{resources/images/gradient_norms.tex}
 
@@ -102,6 +102,6 @@ We report preliminary results using a manually selected clip value on the Subj t
 
 % \subsection{ICL Attention Update Expressiveness}
 % We calculated SimAOU and SimAM for both original and linearized models. Results are shown in Table \ref{tabel:lin_results}.
-% In addition we were unable evaluate the linearized model on the datasets AGNews and CB due to heavy memory consumption. 
+% In addition we were unable to evaluate the linearized model on the datasets AGNews and CB due to heavy memory consumption. 
 % The results indicate that the linearized model yields lower similarity scores compared to the original model but significantly higher scores than a random vector. This suggests that our hypothesis was incorrect and other simple model versions should be thought of. More on that in the discussion section.
 % \input{resources/tables/linearized_gd.tex}

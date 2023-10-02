@@ -61,8 +61,8 @@ Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
 	To study how this dissimilarity affects the model's behavior we propose a causally aware finetuning process and compare it with previous results. 
 	%We find that the causally aware process competes with standard finetuning across several comparison metrics.
 	% Linearalization
-	Lastly we show that finetuning using a linear approximation of the model achieves comparable results to standard finetuning,
-	suggesting that the underlying behavior may be explainable by simpler optimization processes.
+	% Lastly we show that finetuning using a linear approximation of the model achieves comparable results to standard finetuning,
+	% suggesting that the underlying behavior may be explainable by simpler optimization processes.
 	% [git]
 	The code implementation for our experiments is available at:
 	\href{https://github.com/GiilDe/ft-vs-icl}{https://github.com/GiilDe/ft-vs-icl}
@@ -87,7 +87,7 @@ Tomer Bar Natan,~Gilad Deutch,~Nadav Magar\\
 \section{Conclusion}
 Inspired by recent works, we attempted to further explore the relationship between in-context learning and gradient descent based finetuning in practical settings.
 We revisit existing work and show that ICL and FT predictions are misaligned and propose a better measure quantify this difference.
-Motivated by inherit differences in expressive power between ICL and FT, we explore whether a simpler variant of GD may show similar results - with insufficient results.
+% Motivated by inherit differences in expressive power between ICL and FT, we explore whether a simpler variant of GD may show similar results - with insufficient results.
 Finally, we address a fundamental difference in information flow between the methods, and suggest a novel FT method that respects layer causality.
 Our results show potential for a more plausible explanation of ICL, and may suggest exciting possible practical applications for embedding context into a model's weights.  
 \section{Acknowledgements}

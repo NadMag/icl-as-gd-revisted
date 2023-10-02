@@ -66,17 +66,17 @@ Following the reverse direction of Equation (\ref{equ:sgd_attn_dual}), you arriv
 
 By analogy with Equation(\ref{equ:sgd_attn_dual}), we can regard $W_{K} \textbf{x}^{\prime}_i$ as the training examples and $W_{V} X^{\prime}$ as their corresponding meta-gradients. 
 
-\subsection{Linearization of a Model}
-Resent works suggest a function we optimize can significantly simplify by a method called linearization \cite{10.5555/3454287.3455056, linearization23}.
-Specifically, these works suggest that it is possible to approximate a pre-trained model in the vicinity of its initial parameters:
-\begin{equation}
-    f_{\theta_0 + \delta \theta}(x) \approx f_{\theta_0}(x) + \delta \theta^\textrm{T} \nabla_{\theta_0} f(x) := f_{\delta \theta}^{\textrm{lin}}(x; \theta_0)
-\end{equation}
-where $\theta_0$ represents the pre-trained model's parameters, $\delta \theta$ indicates the change in parameters during fine-tuning, and $x$ denotes an input sequence (fixed with respect to $\delta \theta$).
-This is a linear model across deep representations, denoted as $\phi_i(x) = \nabla_{\theta_0} f(x)$. We don’t require taking gradients through the entire network, just the coefficients. We then perform the following gradient step:
+% \subsection{Linearization of a Model}
+% Resent works suggest a function we optimize can significantly simplify by a method called linearization \cite{10.5555/3454287.3455056, linearization23}.
+% Specifically, these works suggest that it is possible to approximate a pre-trained model in the vicinity of its initial parameters:
+% \begin{equation}
+%     f_{\theta_0 + \delta \theta}(x) \approx f_{\theta_0}(x) + \delta \theta^\textrm{T} \nabla_{\theta_0} f(x) := f_{\delta \theta}^{\textrm{lin}}(x; \theta_0)
+% \end{equation}
+% where $\theta_0$ represents the pre-trained model's parameters, $\delta \theta$ indicates the change in parameters during fine-tuning, and $x$ denotes an input sequence (fixed with respect to $\delta \theta$).
+% This is a linear model across deep representations, denoted as $\phi_i(x) = \nabla_{\theta_0} f(x)$. We don’t require taking gradients through the entire network, just the coefficients. We then perform the following gradient step:
 
-\[
-\theta \xleftarrow{} \theta - \eta \nabla\mathcal{L}(f^{\textrm{lin}} (x), y) \cdot \phi(x)
-\]
+% \[
+% \theta \xleftarrow{} \theta - \eta \nabla\mathcal{L}(f^{\textrm{lin}} (x), y) \cdot \phi(x)
+% \]
 
-In our work, we underscore the importance of exploring alternative approaches that enable the implementation of functions with reduced complexity when investigating ICL. This emphasis arises from the limitations imposed on the complexity of functions attainable through the forward pass, which must align with the network's depth. Therefore, we have explored a linearized variant of the model to address this constraint
+% In our work, we underscore the importance of exploring alternative approaches that enable the implementation of functions with reduced complexity when investigating ICL. This emphasis arises from the limitations imposed on the complexity of functions attainable through the forward pass, which must align with the network's depth. Therefore, we have explored a linearized variant of the model to address this constraint

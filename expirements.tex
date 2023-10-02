@@ -16,7 +16,7 @@ The following sections describe the evaluation metrics adopted from \cite{dai202
 % Finally we compute the \textbf{Rec2FTP} score as: $\frac{ \sizeof{ \left( C_{\text{ICL}} \cap C_{\text{FT}} \right) \setminus C_{\text{ZSL}} } }{ \sizeof{ C_{\text{FT}} \setminus C_{\text{ZSL}} } }$ .
 % A higher Rec2FTP score suggests that ICL covers more correct behavior of finetuning from the perspective of the model prediction.
 %This measure is agnostic to the inner workings of the attention mechanism.
-
+\input{resources/images/prediction_alignment.tex}
 \paragraph{Attention Output Direction (SimAOU)}
 This metrics quantifies the similarity between two updates to the attention output of a layer with respect to the zero-shot setting. 
 For a given query example, let $h^{(l)}_X$ represent the normalized output representation of the last token at the $l$-th attention layer within setting $X$.
@@ -32,7 +32,6 @@ Similarly, after finetuning, we calculate the cosine similarity between $m^{(l,h
 
 
 \subsection{ICL Predictions Poorly Align with Finetuning}
-\input{resources/images/prediction_alignment.tex}
 \input{resources/tables/acc_jaccard.tex}
 In this section we focus on the perspective of model predictions, regarding both ICL and finetuning as black-box updates to the original zero-shot prediction.
 While this analysis provides less insight into the inner workings of ICL, prediction alignment is easily interpretable and seems necessary for downstream applications of such comparisons.
@@ -62,8 +61,6 @@ For each we also compute the Jaccard index computed over only prediction changes
 
 \subsection{Layer Causality in Finetuning}
 \label{sec:layer_causality}
-\input{resources/images/causal_layer_diagram.tex}
-\input{resources/tables/layer_causal_table.tex}
 
 In this section we highlight an intrinsic difference in information flow of attention output updates between standard finetuning and ICL.
 
@@ -74,6 +71,9 @@ In this section we highlight an intrinsic difference in information flow of atte
   \item \textbf{Sequential Update}: Equation \ref{equ:icl_opti_dual} shows that in ICL each attention layer's output is updated sequently throughout the model's depth axis.
   However, in GD based finetuning all layer's parameters are updated in a single concurrent step.
 \end{enumerate}
+
+\input{resources/images/causal_layer_diagram.tex}
+\input{resources/tables/layer_causal_table.tex}
 
 Motivated by these observations we propose a layer causality aware finetuning method where each layer is updated individually.
 Specifically, we project the output of each layer into the label space using the pertained projection head and compute the cross-entropy loss of this prediction.
@@ -91,17 +91,17 @@ We highlight two fallacies of our proposed method, and how they might have contr
 				During pertaining the gradient of early layers is propagated throughout the model which usually dampens its norm.  
 \end{itemize}
 
-We verify this hypothesis by comparing the norm of  each attention layer's gradient during the standard FT process and layer causal FT in figure \ref{fig:grad_norm_comparison}.
+We verify this hypothesis by comparing the norm of  each attention layer's gradient during the standard FT process and layer causal FT in Figure \ref{fig:grad_norm_comparison}.
 
 \input{resources/images/gradient_norms.tex}
 
 Following this finding, we attempt to apply gradient clipping in the layer causal process with limited success.
-We report preliminary results using a manually selected clip value on the Subj task in table~\ref{tab:per_layer_clipping_metrics}.
+We report preliminary results using a manually selected clip value on the Subj task in Table~\ref{tab:per_layer_clipping_metrics}.
 \input{resources/tables/layer_causal_clipped.tex}
 
 
-\subsection{ICL Attention Update Expressiveness}
-We calculated SimAOU and SimAM for both original and linearized models. Results are shown in Table \ref{tabel:lin_results}.
-In addition we were unable evaluate the linearized model on the datasets AGNews and CB due to heavy memory consumption. 
-The results indicate that the linearized model yields lower similarity scores compared to the original model but significantly higher scores than a random vector. This suggests that our hypothesis was incorrect and other simple model versions should be thought of. More on that in the discussion section.
-\input{resources/tables/linearized_gd.tex}
+% \subsection{ICL Attention Update Expressiveness}
+% We calculated SimAOU and SimAM for both original and linearized models. Results are shown in Table \ref{tabel:lin_results}.
+% In addition we were unable evaluate the linearized model on the datasets AGNews and CB due to heavy memory consumption. 
+% The results indicate that the linearized model yields lower similarity scores compared to the original model but significantly higher scores than a random vector. This suggests that our hypothesis was incorrect and other simple model versions should be thought of. More on that in the discussion section.
+% \input{resources/tables/linearized_gd.tex}
